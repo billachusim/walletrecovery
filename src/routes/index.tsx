@@ -200,7 +200,7 @@ function LandingPage() {
             <Link to="/blog" className="hover:text-primary">intel</Link>
             <Link to="/faq" className="hover:text-primary">faq</Link>
             <Link to="/about" className="hover:text-primary">about</Link>
-            <Link to="/contact" className="hover:text-primary">contact</Link>
+            
           </div>
         </div>
       </footer>
