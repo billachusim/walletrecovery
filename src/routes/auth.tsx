@@ -8,11 +8,20 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const Route = createFileRoute("/auth")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s.next === "string" ? s.next : "",
+  }),
   component: AuthPage,
 });
 
+function isSameOriginPath(p: string): boolean {
+  return typeof p === "string" && p.startsWith("/") && !p.startsWith("//");
+}
+
 function AuthPage() {
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
+  const safeNext = isSameOriginPath(next) ? next : "";
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,13 +30,22 @@ function AuthPage() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
+  const goPostAuth = () => {
+    if (safeNext) {
+      window.location.assign(safeNext);
+    } else {
+      navigate({ to: "/dashboard" });
+    }
+  };
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (data.user) {
-        navigate({ to: "/dashboard" });
+        goPostAuth();
       }
     });
-  }, [navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigate, safeNext]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +56,7 @@ function AuthPage() {
     if (error) {
       setError(error.message);
     } else {
-      navigate({ to: "/dashboard" });
+      goPostAuth();
     }
   };
 
@@ -46,11 +64,14 @@ function AuthPage() {
     e.preventDefault();
     setError(null);
     setLoading(true);
+    const emailRedirectTo = safeNext
+      ? `${window.location.origin}${safeNext}`
+      : window.location.origin;
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo,
         data: { full_name: fullName },
       },
     });
@@ -64,14 +85,15 @@ function AuthPage() {
 
   const handleGoogleSignIn = async () => {
     setError(null);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
+    const redirect_uri = safeNext
+      ? `${window.location.origin}${safeNext}`
+      : window.location.origin;
+    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri });
     if (result.error) {
       setError(result.error instanceof Error ? result.error.message : String(result.error));
     }
     if (!result.redirected && !result.error) {
-      navigate({ to: "/dashboard" });
+      goPostAuth();
     }
   };
 
