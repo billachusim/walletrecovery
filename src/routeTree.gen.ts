@@ -13,6 +13,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as BlogRouteImport } from './routes/blog'
@@ -32,8 +33,11 @@ import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ApiAgentRouteImport } from './routes/api/agent'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedConsoleRouteImport } from './routes/_authenticated/console'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as AuthenticatedConsoleIndexRouteImport } from './routes/_authenticated/console.index'
 import { Route as AuthenticatedConsoleCasesRouteImport } from './routes/_authenticated/console.cases'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as AuthenticatedConsoleCaseIdRouteImport } from './routes/_authenticated/console.case.$id'
 import { Route as AuthenticatedConsoleAssessmentIdRouteImport } from './routes/_authenticated/console.assessment.$id'
 
@@ -55,6 +59,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -152,6 +161,18 @@ const AuthenticatedConsoleRoute = AuthenticatedConsoleRouteImport.update({
   path: '/console',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedConsoleIndexRoute =
   AuthenticatedConsoleIndexRouteImport.update({
     id: '/',
@@ -163,6 +184,12 @@ const AuthenticatedConsoleCasesRoute =
     id: '/cases',
     path: '/cases',
     getParentRoute: () => AuthenticatedConsoleRoute,
+  } as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const AuthenticatedConsoleCaseIdRoute =
   AuthenticatedConsoleCaseIdRouteImport.update({
@@ -185,10 +212,13 @@ export interface FileRoutesByFullPath {
   '/blog': typeof BlogRouteWithChildren
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/mcp': typeof McpRoute
   '/pricing': typeof PricingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/console': typeof AuthenticatedConsoleRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/api/agent': typeof ApiAgentRoute
@@ -200,6 +230,7 @@ export interface FileRoutesByFullPath {
   '/recover/seed-phrase': typeof RecoverSeedPhraseRoute
   '/recover/trust-wallet': typeof RecoverTrustWalletRoute
   '/blog/': typeof BlogIndexRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/console/cases': typeof AuthenticatedConsoleCasesRoute
   '/console/': typeof AuthenticatedConsoleIndexRoute
   '/console/assessment/$id': typeof AuthenticatedConsoleAssessmentIdRoute
@@ -212,10 +243,13 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/mcp': typeof McpRoute
   '/pricing': typeof PricingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/api/agent': typeof ApiAgentRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -226,6 +260,7 @@ export interface FileRoutesByTo {
   '/recover/seed-phrase': typeof RecoverSeedPhraseRoute
   '/recover/trust-wallet': typeof RecoverTrustWalletRoute
   '/blog': typeof BlogIndexRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/console/cases': typeof AuthenticatedConsoleCasesRoute
   '/console': typeof AuthenticatedConsoleIndexRoute
   '/console/assessment/$id': typeof AuthenticatedConsoleAssessmentIdRoute
@@ -241,10 +276,13 @@ export interface FileRoutesById {
   '/blog': typeof BlogRouteWithChildren
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/mcp': typeof McpRoute
   '/pricing': typeof PricingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/console': typeof AuthenticatedConsoleRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/api/agent': typeof ApiAgentRoute
@@ -256,6 +294,7 @@ export interface FileRoutesById {
   '/recover/seed-phrase': typeof RecoverSeedPhraseRoute
   '/recover/trust-wallet': typeof RecoverTrustWalletRoute
   '/blog/': typeof BlogIndexRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_authenticated/console/cases': typeof AuthenticatedConsoleCasesRoute
   '/_authenticated/console/': typeof AuthenticatedConsoleIndexRoute
   '/_authenticated/console/assessment/$id': typeof AuthenticatedConsoleAssessmentIdRoute
@@ -271,10 +310,13 @@ export interface FileRouteTypes {
     | '/blog'
     | '/faq'
     | '/forgot-password'
+    | '/mcp'
     | '/pricing'
     | '/reset-password'
     | '/services'
     | '/sitemap.xml'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/console'
     | '/dashboard'
     | '/api/agent'
@@ -286,6 +328,7 @@ export interface FileRouteTypes {
     | '/recover/seed-phrase'
     | '/recover/trust-wallet'
     | '/blog/'
+    | '/.mcp/invoke-tool/$tool'
     | '/console/cases'
     | '/console/'
     | '/console/assessment/$id'
@@ -298,10 +341,13 @@ export interface FileRouteTypes {
     | '/auth'
     | '/faq'
     | '/forgot-password'
+    | '/mcp'
     | '/pricing'
     | '/reset-password'
     | '/services'
     | '/sitemap.xml'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/dashboard'
     | '/api/agent'
     | '/blog/$slug'
@@ -312,6 +358,7 @@ export interface FileRouteTypes {
     | '/recover/seed-phrase'
     | '/recover/trust-wallet'
     | '/blog'
+    | '/.mcp/invoke-tool/$tool'
     | '/console/cases'
     | '/console'
     | '/console/assessment/$id'
@@ -326,10 +373,13 @@ export interface FileRouteTypes {
     | '/blog'
     | '/faq'
     | '/forgot-password'
+    | '/mcp'
     | '/pricing'
     | '/reset-password'
     | '/services'
     | '/sitemap.xml'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/_authenticated/console'
     | '/_authenticated/dashboard'
     | '/api/agent'
@@ -341,6 +391,7 @@ export interface FileRouteTypes {
     | '/recover/seed-phrase'
     | '/recover/trust-wallet'
     | '/blog/'
+    | '/.mcp/invoke-tool/$tool'
     | '/_authenticated/console/cases'
     | '/_authenticated/console/'
     | '/_authenticated/console/assessment/$id'
@@ -356,10 +407,13 @@ export interface RootRouteChildren {
   BlogRoute: typeof BlogRouteWithChildren
   FaqRoute: typeof FaqRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  McpRoute: typeof McpRoute
   PricingRoute: typeof PricingRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiAgentRoute: typeof ApiAgentRoute
   RecoverExchangeLockoutRoute: typeof RecoverExchangeLockoutRoute
   RecoverForgottenPasswordRoute: typeof RecoverForgottenPasswordRoute
@@ -367,6 +421,7 @@ export interface RootRouteChildren {
   RecoverMetamaskRoute: typeof RecoverMetamaskRoute
   RecoverSeedPhraseRoute: typeof RecoverSeedPhraseRoute
   RecoverTrustWalletRoute: typeof RecoverTrustWalletRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -397,6 +452,13 @@ declare module '@tanstack/react-router' {
       path: '/pricing'
       fullPath: '/pricing'
       preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -532,6 +594,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConsoleRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/console/': {
       id: '/_authenticated/console/'
       path: '/'
@@ -545,6 +621,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/console/cases'
       preLoaderRoute: typeof AuthenticatedConsoleCasesRouteImport
       parentRoute: typeof AuthenticatedConsoleRoute
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/console/case/$id': {
       id: '/_authenticated/console/case/$id'
@@ -614,10 +697,14 @@ const rootRouteChildren: RootRouteChildren = {
   BlogRoute: BlogRouteWithChildren,
   FaqRoute: FaqRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  McpRoute: McpRoute,
   PricingRoute: PricingRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ApiAgentRoute: ApiAgentRoute,
   RecoverExchangeLockoutRoute: RecoverExchangeLockoutRoute,
   RecoverForgottenPasswordRoute: RecoverForgottenPasswordRoute,
@@ -625,6 +712,7 @@ const rootRouteChildren: RootRouteChildren = {
   RecoverMetamaskRoute: RecoverMetamaskRoute,
   RecoverSeedPhraseRoute: RecoverSeedPhraseRoute,
   RecoverTrustWalletRoute: RecoverTrustWalletRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
