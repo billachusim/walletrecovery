@@ -69,8 +69,8 @@ function CaseDetail() {
         const { error: e2 } = await supabase.from("case_updates").insert({
           case_id: id,
           author_id: user.id,
-          status_change: newStatus || null,
-          note: updateNote,
+          stage: newStatus || null,
+          message: updateNote,
         });
         if (e2) throw e2;
       }
@@ -92,7 +92,7 @@ function CaseDetail() {
       const { error } = await supabase.from("case_messages").insert({
         case_id: id,
         sender_id: user.id,
-        body: msg,
+        content: msg,
         is_internal: isInternal,
       });
       if (error) throw error;
@@ -168,9 +168,9 @@ function CaseDetail() {
                 <div key={u.id} className="rounded border border-border/50 p-3 text-sm">
                   <p className="font-mono text-[10px] text-muted-foreground">
                     {new Date(u.created_at).toLocaleString()}
-                    {u.status_change && ` · → ${u.status_change}`}
+                    {u.stage && ` · → ${u.stage}`}
                   </p>
-                  {u.note && <p className="mt-1 whitespace-pre-wrap">{u.note}</p>}
+                  {u.message && <p className="mt-1 whitespace-pre-wrap">{u.message}</p>}
                 </div>
               ))
             ) : (
@@ -194,7 +194,7 @@ function CaseDetail() {
                     {new Date(m.created_at).toLocaleString()}
                     {m.is_internal && " · internal"}
                   </p>
-                  <p className="mt-1 whitespace-pre-wrap">{m.body}</p>
+                  <p className="mt-1 whitespace-pre-wrap">{m.content}</p>
                 </div>
               ))
             ) : (
