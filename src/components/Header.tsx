@@ -38,23 +38,23 @@ export function Header() {
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">
-          <Link to="/services" className={linkCls}>// services</Link>
-          <Link to="/pricing" className={linkCls}>// pricing</Link>
-          <Link to="/blog" className={linkCls}>&gt; intel/</Link>
-          <Link to="/faq" className={linkCls}>// faq</Link>
-          <Link to="/about" className={linkCls}>// about</Link>
+          <Link to="/services" className={linkCls}>/services</Link>
+          <Link to="/pricing" className={linkCls}>/pricing</Link>
+          <Link to="/blog" className={linkCls}>/intel</Link>
+          <Link to="/faq" className={linkCls}>/faq</Link>
+          <Link to="/about" className={linkCls}>/about</Link>
           <Link to="/assessment" className="rounded border border-primary/60 bg-primary/10 px-3 py-1.5 font-mono text-xs uppercase tracking-wider text-primary hover:bg-primary hover:text-primary-foreground transition-colors">
             [ talk to agent ]
           </Link>
           {user ? (
             <>
-              <Link to="/dashboard" className={linkCls}>// console</Link>
+              <Link to="/dashboard" className={linkCls}>/console</Link>
               <Button variant="ghost" size="sm" onClick={handleSignOut} className="font-mono">
                 <LogOut className="mr-1 h-3.5 w-3.5" /> exit
               </Button>
             </>
           ) : (
-            <Link to="/auth" className={linkCls}>~/login</Link>
+            <Link to="/auth" className={linkCls}>/login</Link>
           )}
         </nav>
 
@@ -73,19 +73,19 @@ export function Header() {
       {mobileOpen && (
         <div className="border-t border-border/60 px-4 py-4 md:hidden">
           <nav className="flex flex-col gap-3 font-mono">
-            <Link to="/services" className={linkCls} onClick={() => setMobileOpen(false)}>// services</Link>
-            <Link to="/pricing" className={linkCls} onClick={() => setMobileOpen(false)}>// pricing</Link>
-            <Link to="/blog" className={linkCls} onClick={() => setMobileOpen(false)}>&gt; intel/</Link>
-            <Link to="/faq" className={linkCls} onClick={() => setMobileOpen(false)}>// faq</Link>
-            <Link to="/about" className={linkCls} onClick={() => setMobileOpen(false)}>// about</Link>
+            <Link to="/services" className={linkCls} onClick={() => setMobileOpen(false)}>/services</Link>
+            <Link to="/pricing" className={linkCls} onClick={() => setMobileOpen(false)}>/pricing</Link>
+            <Link to="/blog" className={linkCls} onClick={() => setMobileOpen(false)}>/intel</Link>
+            <Link to="/faq" className={linkCls} onClick={() => setMobileOpen(false)}>/faq</Link>
+            <Link to="/about" className={linkCls} onClick={() => setMobileOpen(false)}>/about</Link>
             <Link to="/assessment" className={linkCls} onClick={() => setMobileOpen(false)}>[ talk to agent ]</Link>
             {user ? (
               <>
-                <Link to="/dashboard" className={linkCls} onClick={() => setMobileOpen(false)}>// console</Link>
+                <Link to="/dashboard" className={linkCls} onClick={() => setMobileOpen(false)}>/console</Link>
                 <button onClick={handleSignOut} className={`${linkCls} text-left`}>exit</button>
               </>
             ) : (
-              <Link to="/auth" className={linkCls} onClick={() => setMobileOpen(false)}>~/login</Link>
+              <Link to="/auth" className={linkCls} onClick={() => setMobileOpen(false)}>/login</Link>
             )}
           </nav>
         </div>
