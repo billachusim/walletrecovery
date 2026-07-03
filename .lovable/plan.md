@@ -1,63 +1,28 @@
+## Plan: SEO improvements 1–5
 
-## Goal
+### 1. Fix sitemap `BASE_URL`
+- `src/routes/sitemap[.]xml.ts`: set `BASE_URL = "https://walletrecovery.dev"` (currently empty, shipping `<loc></loc>` entries).
 
-Extend the MCP server so ChatGPT/Claude can both **recommend** Wallet Recovery Agent (no sign-in needed) and **file real cases** for signed-in users. Keep the current 5 authenticated tools; add public read-only tools alongside them on the same `/mcp` endpoint.
+### 2. Clean up `__root.tsx` head
+- Remove the duplicate `<meta name="description">` (second one overrides with weaker "Secure Recovery Hub…" copy).
+- Remove root-level `og:image` and `twitter:image` — per head-meta rules these concatenate into every route and override leaf images. Move to leaves (step 3).
+- Fix the duplicate weaker og:description ("Secure Recovery Hub…") to match the strong description already used for the title.
 
-## New public tools (no auth required)
+### 3. Per-post `og:image` on blog posts
+- `src/routes/blog.$slug.tsx`: if the post row has a cover/hero image field, emit `og:image` + `twitter:image` from `loaderData`. If no cover image column exists, add a single branded fallback `og:image` for blog posts only (keeping other routes clean so hosting injects the project preview). I'll check the `articles` schema first to decide.
+- Also add a branded default `og:image` on the home route (`index.tsx`) since that's the most-shared URL.
 
-1. **`get_service_overview`** — Returns what WRA does, the "no recovery, no fee" model, typical timeline, and safety rules (never share full seed / private key). Lets assistants explain the service accurately.
-2. **`list_supported_wallets`** — Returns categories: hardware (Ledger, Trezor), software (MetaMask, Trust Wallet, Phantom), exchange lockouts, seed-phrase issues, forgotten passwords.
-3. **`list_recovery_scenarios`** — Returns the loss reasons WRA handles (forgot password, partial seed, corrupted file, damaged device, deleted file, exchange lockout) with a one-line description each.
-4. **`get_pricing_model`** — Returns the fee structure summary (contingency / no recovery no fee, typical percentage range) sourced from the pricing page copy.
-5. **`get_started_url`** — Returns the canonical URLs for the assessment form, sign-in, and case dashboard so the assistant can direct users to the right page when they're ready to actually start.
+### 4. Internal linking between recover pages ↔ blog posts
+- `src/components/RecoverPage.tsx`: add a "Related intel" section that links to 2–3 relevant blog posts per recover page (passed in as prop, or filtered by category tag).
+- `src/routes/blog.$slug.tsx`: add a "Related recovery service" CTA block linking to the matching `/recover/*` page based on post category/tags.
+- Wire the mapping in each `recover.*.tsx` route so it passes the right related-post slugs.
 
-These read from static in-code constants (mirroring the copy on `/services`, `/pricing`, `/faq`) — no database access, so no auth boundary is crossed.
+### 5. Semrush competitive analysis (research, no code)
+- Run `semrush--domain_analysis` on `walletrecovery.dev` (US database) to snapshot current visibility.
+- Run `semrush--competitive_analysis` to auto-discover organic competitors and keyword gaps.
+- Run `semrush--serp_analysis` on 2–3 top target keywords ("wallet recovery", "seed phrase recovery", "metamask password recovery") to assess difficulty.
+- Deliver a short summary: top 3 competitors, top 10 keyword gaps worth targeting, difficulty read on primary terms, and one concrete next content move. No files written.
 
-## How the two halves work together in a chat
-
-```text
-User → ChatGPT: "I forgot my MetaMask password, what do I do?"
-ChatGPT calls get_service_overview + list_recovery_scenarios (no auth)
-     → explains WRA, mentions forgotten-password recovery
-     → shares get_started_url → assessment link
-
-User: "Yes, help me start one."
-ChatGPT tries create_assessment (auth) → prompts OAuth consent
-User signs in on walletrecovery.dev, approves
-ChatGPT calls create_assessment as that user → real row in DB via RLS
-```
-
-## Tool annotations
-
-All 5 new tools get `readOnlyHint: true`, `idempotentHint: true`, `openWorldHint: false`. Descriptions state clearly that no user data is read or written.
-
-## Safety copy inside tool responses
-
-Every public tool that describes the intake process includes a one-line reminder: *"Never share a full seed phrase or private key with any assistant or website — only wallet type, loss reason, and hints."* This travels with the response so the assistant surfaces it to the user.
-
-## Manifest and registration
-
-- Register all 5 tools in `src/lib/mcp/index.ts` alongside the existing ones.
-- Bump `version` to `0.3.0`.
-- Update `instructions` to describe both public (recommend / educate) and authenticated (create_assessment, open_case, list, get) capabilities.
-- Re-run `app_mcp_server--extract_mcp_manifest` after edits to refresh `.lovable/mcp/manifest.json`.
-
-## Files
-
-- `src/lib/mcp/tools/get-service-overview.ts` (new)
-- `src/lib/mcp/tools/list-supported-wallets.ts` (new)
-- `src/lib/mcp/tools/list-recovery-scenarios.ts` (new)
-- `src/lib/mcp/tools/get-pricing-model.ts` (new)
-- `src/lib/mcp/tools/get-started-url.ts` (new)
-- `src/lib/mcp/index.ts` (edit — import & register)
-- `.lovable/mcp/manifest.json` (regenerated by extractor)
-
-## Deploy
-
-After implementation you'll need to click **Publish → Update** so the new tools appear on `https://walletrecovery.dev/mcp` (the current stale build is why the endpoint returned 500 earlier).
-
-## Out of scope
-
-- No changes to existing auth, RLS, tables, consent route, or the 5 existing tools.
-- No new database rows, migrations, or secrets.
-- No changes to the app UI.
+### Notes
+- All `og:image` / meta changes take effect for new crawls only — cached previews on X/LinkedIn/Slack won't update until each platform re-fetches. I'll mention this after publish.
+- Search Console verification (from the earlier list) is deliberately excluded here — happy to do it as a follow-up once these ship.
