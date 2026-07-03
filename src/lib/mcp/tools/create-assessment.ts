@@ -57,14 +57,37 @@ export default defineTool({
       .select("id, wallet_type, loss_reason, status, created_at")
       .single();
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
+
+    const ref = String(data.id).slice(0, 8).toUpperCase();
+    const userEmail = ctx.getUserEmail();
+    if (userEmail) {
+      try {
+        const { enqueueTransactionalEmail } = await import("@/lib/email/enqueue.server");
+        void enqueueTransactionalEmail({
+          templateName: "assessment-received",
+          recipientEmail: userEmail,
+          idempotencyKey: `assessment-received-${data.id}`,
+          templateData: {
+            case_ref: ref,
+            wallet_type: data.wallet_type,
+            loss_reason: data.loss_reason,
+            is_authenticated: true,
+            dashboard_url: "https://walletrecovery.dev/dashboard",
+          },
+        }).catch((err) => console.error("[mcp create_assessment] email failed:", err));
+      } catch (err) {
+        console.error("[mcp create_assessment] enqueue import failed:", err);
+      }
+    }
+
     return {
       content: [
         {
           type: "text",
-          text: `Assessment created. ref: ${String(data.id).slice(0, 8).toUpperCase()}. A senior operative will review it and follow up within 24–48h.`,
+          text: `Assessment created. ref: ${ref}. A senior operative will review it and follow up within 24–48h.`,
         },
       ],
-      structuredContent: { assessment: data, case_ref: String(data.id).slice(0, 8).toUpperCase() },
+      structuredContent: { assessment: data, case_ref: ref },
     };
   },
 });
