@@ -67,7 +67,8 @@ export function Header() {
           </Link>
           {user ? (
             <>
-              <Link to="/dashboard" className={linkCls}>/console</Link>
+              <Link to="/dashboard" className={linkCls}>/dashboard</Link>
+              {isStaff && <Link to="/console" className={linkCls}>/console</Link>}
               <Button variant="ghost" size="sm" onClick={handleSignOut} className="font-mono">
                 <LogOut className="mr-1 h-3.5 w-3.5" /> exit
               </Button>
@@ -100,7 +101,10 @@ export function Header() {
             <Link to="/assessment" className={linkCls} onClick={() => setMobileOpen(false)}>[ talk to agent ]</Link>
             {user ? (
               <>
-                <Link to="/dashboard" className={linkCls} onClick={() => setMobileOpen(false)}>/console</Link>
+                <Link to="/dashboard" className={linkCls} onClick={() => setMobileOpen(false)}>/dashboard</Link>
+                {isStaff && (
+                  <Link to="/console" className={linkCls} onClick={() => setMobileOpen(false)}>/console</Link>
+                )}
                 <button onClick={handleSignOut} className={`${linkCls} text-left`}>exit</button>
               </>
             ) : (
