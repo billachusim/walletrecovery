@@ -195,13 +195,12 @@ function BlogPost() {
             <p className="mt-2 text-sm text-muted-foreground">
               Need this handled, not just explained? Our operatives specialize in exactly this scenario.
             </p>
-            <Link
-              to="/recover/$"
-              params={{ _splat: relatedRecover.slug }}
+            <a
+              href={`/recover/${relatedRecover.slug}`}
               className="mt-4 inline-flex items-center gap-2 font-mono text-xs text-primary hover:text-glow"
             >
               [ open service page ] <ArrowRight className="h-3 w-3" />
-            </Link>
+            </a>
           </div>
         ) : null}
 
