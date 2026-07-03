@@ -3,11 +3,41 @@ import { Header } from "@/components/Header";
 import { Shield, Lock, FileSearch, Smartphone, ArrowRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
+const serviceSchemas = [
+  { name: "Password Recovery", description: "GPU-accelerated password recovery on encrypted crypto wallet files. wallet.dat, keystore, MetaMask, Trust Wallet, Electrum." },
+  { name: "Seed Phrase Reconstruction", description: "BIP-39 partial seed phrase recovery for 12/18/24-word phrases with checksum-based cryptographic search." },
+  { name: "Hardware Wallet Recovery", description: "Ledger, Trezor, KeepKey PIN and firmware recovery with lab-based chain of custody." },
+  { name: "Damaged Device Recovery", description: "Forensic recovery from corrupted drives, phones, and physically damaged storage." },
+];
+
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Our Services — Wallet Recovery" },
-      { name: "description", content: "Professional cryptocurrency wallet recovery services including password recovery, phrase reconstruction, file repair, and device data recovery." },
+      { title: "Crypto Wallet Recovery Services — Seed, Password, Hardware, Exchange | Wallet Recovery Agent" },
+      { name: "description", content: "Full-service cryptocurrency wallet recovery: seed phrase reconstruction, password brute-force, Ledger/Trezor hardware wallet recovery, corrupted file repair, exchange lockout support. No recovery, no fee." },
+      { property: "og:title", content: "Crypto Wallet Recovery Services | Wallet Recovery Agent" },
+      { property: "og:description", content: "Seed, password, hardware, exchange — every recovery service, one operative crew. No recovery, no fee." },
+      { property: "og:url", content: "/services" },
+    ],
+    links: [{ rel: "canonical", href: "/services" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          itemListElement: serviceSchemas.map((s, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            item: {
+              "@type": "Service",
+              name: s.name,
+              description: s.description,
+              provider: { "@type": "Organization", name: "Wallet Recovery Agent" },
+            },
+          })),
+        }),
+      },
     ],
   }),
   component: ServicesPage,
@@ -83,9 +113,9 @@ function ServicesPage() {
         </div>
       </main>
 
-      <footer className="border-t border-border px-4 py-10">
-        <div className="mx-auto max-w-7xl text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} Wallet Recovery. All rights reserved.
+      <footer className="border-t border-border/50 px-4 py-10">
+        <div className="mx-auto max-w-7xl text-center font-mono text-xs text-muted-foreground">
+          &copy; {new Date().getFullYear()} wallet_recovery_agent // your operative on the inside
         </div>
       </footer>
     </div>

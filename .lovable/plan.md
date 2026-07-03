@@ -1,92 +1,110 @@
-# Recovery Agent — Matrix Rebrand + AI Agent Assessment
+## Wallet Recovery Agent — Rebrand + Heavy SEO/AI-visibility push
 
-Rebrand the platform to **Recovery Agent** with a green-on-black Matrix/hacker aesthetic, and replace the current 3-step form assessment with a conversational AI agent that qualifies cases in the browser. Paid recovery still handed off to human "senior operatives" — that handoff is the trust anchor.
+Approved plan, updated with a bigger blog focus and header nav placement.
 
-## 1. Brand + Copy
+---
 
-- Name: **Recovery Agent** (from "Wallet Recovery")
-- Tagline: *"Your operative on the inside."*
-- Voice: terse, terminal-flavored, competent. No exclamation marks. Prefix section labels with `>` and `//`.
-- Update: header logo, footer, page titles/meta, hero copy, all references to "Wallet Recovery" across `Header.tsx`, `__root.tsx`, `index.tsx`, `services.tsx`, `pricing.tsx`, `faq.tsx`, `contact.tsx`, `auth.tsx`.
+### 1. Rebrand: Recovery Agent → Wallet Recovery Agent
 
-## 2. Design System (Matrix theme)
+Replace brand string across `Header.tsx`, `__root.tsx` (title, og:site_name, Organization JSON-LD), `index.tsx`, `services.tsx`, `pricing.tsx`, `faq.tsx`, `contact.tsx`, `auth.tsx`, footer, and the AI agent system prompt in `src/routes/api/agent.ts`. Tagline unchanged: *"Your operative on the inside."*
 
-`src/styles.css` — dark-first OKLCH tokens:
-- `--background` near-black with green cast, `--foreground` phosphor green
-- `--primary` matrix green (filled, on black, `text-glow`); `--accent` neon cyan
-- Card = darker panel + 1px green border + scanline overlay
-- Fonts: JetBrains Mono (headings/UI), Inter (body) — installed via `@fontsource/*` and imported in `src/start.tsx`
-- Utilities: `.scanlines`, `.crt-flicker`, `.text-glow`, `.terminal-caret` (blinking)
+### 2. Blog — prominent, SEO-heavy, themed UI label
 
-`src/components/MatrixRain.tsx` — canvas rain, `pointer-events: none`, ~20fps, hidden on `prefers-reduced-motion: reduce`. Behind hero only, not full-app.
+- **Backend/URL:** `/blog` and `/blog/$slug` (keeps SEO clean — crawlers and AI models recognize `/blog`)
+- **UI label in header nav:** I'll use **`> intel/`** (fits the terminal/hacker theme, reads as "intel drops from the field"). If you prefer, alternatives are `> field_notes/`, `> dispatch/`, `> ops_log/`, `> the_leak/` — but I'll go with `> intel/` unless you say otherwise.
+- **Header nav updated:** Home · Services · Pricing · **Intel** · FAQ · Contact · [ TALK TO AGENT ]
+- **Homepage:** new `> intel.latest` section above the footer showing the 3 most recent posts as terminal-styled cards
+- **Blog index (`/blog`):** grid of posts with tag filters (Seed Phrases, Hardware Wallets, Scam Awareness, How-To, Case Files)
+- **Blog post (`/blog/$slug`):** terminal-styled article layout, reading time, tags, related posts, CTA to `/assessment`, sticky TOC on desktop
 
-Shadcn: keep components, restyle via tokens + variants. No hardcoded colors in components.
+Data source: `articles` table already exists in Cloud. I'll wire the routes to it, then seed **5 posts** via the insert tool (not migration — data only).
 
-## 3. AI Agent Assessment (the core change)
+### 3. Five seed blog posts (fully written, ~800–1200 words each, keyword-targeted)
 
-**Replace** the current 3-step form on `/assessment` with a terminal-style chat:
+1. **"Lost your seed phrase? Here's what actually works in 2026"** — targets *lost seed phrase recovery*
+2. **"How wallet recovery really works (and how to spot the scams)"** — targets *crypto recovery scam*, *legit wallet recovery service*
+3. **"Ledger locked out? Trezor bricked? Hardware wallet recovery, explained"** — targets *ledger recovery*, *trezor recovery*
+4. **"MetaMask password forgotten — 6 recovery paths ranked by success rate"** — targets *forgot metamask password*
+5. **"11 of 12 words: can a partial seed phrase be recovered?"** — targets *partial seed phrase recovery* (long-tail, low competition)
 
-- New server route: `src/routes/api/agent.ts` — POST handler using AI SDK `streamText` through Lovable AI Gateway (`google/gemini-3-flash-preview`).
-- New provider helper: `src/lib/ai-gateway.server.ts` (canonical Lovable Gateway snippet).
-- System prompt: the Agent is a laconic recovery operative. It gathers wallet type, what's lost, approximate value, last-known access details, seed fragments, device history. It never asks for full seed phrases or private keys — hard rule in prompt.
-- Tools (AI SDK `tool` + Zod `inputSchema`):
-  - `save_assessment` — writes to existing `public.assessments` (works for guests via `user_id IS NULL` policy already in place). Returns assessment id + probability.
-  - `estimate_probability` — pure function returning a probability band based on wallet type + info completeness.
-- Loop control: `stopWhen: stepCountIs(50)`.
-- Client: new `src/routes/assessment.tsx` using `useChat` + `DefaultChatTransport`, AI Elements (`conversation`, `message`, `prompt-input`, `shimmer`, `tool`). Assistant messages have no background; user messages are `primary`/`primary-foreground`. Render `message.parts`. Tool activity collapsed by default.
-- Pre-fill from homepage CTA via `Route.useSearch()` seeds the agent's opening question.
-- Handoff: when `save_assessment` succeeds, agent posts a final message with the case ref and a `[ Contact senior operative → ]` link (to `/auth` for guests, `/dashboard` for logged-in).
+Each includes an FAQ block (5 Q&As) marked up as **FAQPage schema** — this is prime AI Overview / Gemini answer bait.
 
-Install AI Elements: `bun x ai-elements@latest add conversation message prompt-input shimmer tool`.
+### 4. Per-route SEO metadata (unique on every page)
 
-Packages to add: `ai`, `@ai-sdk/openai-compatible`, `@ai-sdk/react`, `zod` (if not present), `@fontsource/jetbrains-mono`, `@fontsource/inter`.
+Rewrite `head()` on every route with keyword-targeted title/description/og. Examples:
 
-## 4. Homepage rebuild (`src/routes/index.tsx`)
+- `/` — "Wallet Recovery Agent — Recover Lost Crypto Wallets & Seed Phrases"
+- `/services` — "Crypto Wallet Recovery Services — Seed Phrase, Password, Hardware Wallet"
+- `/assessment` — "Free Wallet Recovery Assessment — Talk to an Agent"
+- `/pricing` — "Wallet Recovery Pricing — No Recovery, No Fee"
+- `/faq` — "Wallet Recovery FAQ — How It Works, Cost, Safety"
+- `/blog` — "Intel — Wallet Recovery Guides, Case Files & Scam Alerts"
+- `/blog/$slug` — pulled from the article row
 
-- Hero: Matrix rain backdrop, monospace headline "> initiate_recovery", subhead, single CTA `[ TALK TO AGENT → ]` linking `/assessment`. Small terminal-style sign-in link.
-- Below fold: `> stats.json`, `> how_it_works.log` (3 steps: talk to agent → forensic review → recovery), `> testimonials.txt`, `> operatives.txt` (trust: credentials, no-recovery-no-fee).
-- Footer: terminal-style legal + links.
+Self-referencing `og:url` + `<link rel="canonical">` on every leaf.
 
-## 5. Route restyle pass (no logic changes)
+### 5. Structured data (JSON-LD) — the AI-search unlock
 
-`services.tsx`, `pricing.tsx`, `faq.tsx`, `contact.tsx`, `auth.tsx`, `forgot-password.tsx`, `reset-password.tsx`, `_authenticated/dashboard.tsx`, `Header.tsx`:
-- Monospace headings prefixed with `>`, `── section ──` dividers
-- Terminal-style form fields (transparent, green underline focus)
-- Auth: "> login --secure" / "> register --new-operative"
-- Dashboard: "control room" — file-tree sidebar, neon status pills, monospace tables
-- Per-route `head()` metadata updated to Recovery Agent branding (title, description, og:title, og:description)
+- **Organization** + **WebSite** with `SearchAction` sitewide in `__root.tsx`
+- **Service** schema on `/services` (one per recovery type)
+- **FAQPage** schema on `/faq` AND on each blog post's FAQ block
+- **Article** schema on each blog post (author, datePublished, image)
+- **BreadcrumbList** on `/blog/$slug` and the `/recover/*` pages
 
-## 6. Accessibility
+### 6. Keyword landing pages (SEO long-tail)
 
-- Matrix rain hidden on `prefers-reduced-motion: reduce`
-- Text-glow tuned down on body copy (headings only) for readability
-- All interactive elements keep visible green focus rings
-- Contrast: body text passes AA on the dark background
+Six focused routes under `/recover/*`, each ~600–900 words with FAQPage schema and CTA to `/assessment`:
 
-## 7. Out of scope
+- `/recover/seed-phrase`
+- `/recover/forgotten-password`
+- `/recover/hardware-wallet`
+- `/recover/metamask`
+- `/recover/trust-wallet`
+- `/recover/exchange-lockout`
 
-- No new DB tables (existing `assessments`, `cases`, `case_messages`, etc. are reused).
-- No schema changes beyond possibly adding a `transcript jsonb` column on `assessments` to store the agent conversation (only if needed — deferred if we can pack it into existing `additional_info`).
-- No Stripe/payments, no staff console changes, no realtime messaging changes.
-- No new languages, no analytics dashboards.
+### 7. Technical SEO plumbing
 
-## Technical notes
+- `public/robots.txt` — allow all, explicitly allow `GPTBot`, `Google-Extended`, `PerplexityBot`, `ClaudeBot`, `CCBot`, `Bingbot`; references sitemap
+- `src/routes/sitemap[.]xml.ts` — server route listing every public route + every published blog post (loader mirrors the article list, filtered to published rows)
+- `public/llms.txt` — short markdown index for AI crawlers, points to `/services`, `/faq`, `/blog`, `/recover/*`
+- Semantic HTML pass: single `<h1>` per page, proper `<article>`/`<section>`, `alt` text
+- Header nav updated to expose Intel + a "Recover" dropdown for the six landing pages
 
-- `LOVABLE_API_KEY` provisioned via `lovable_api_key--create` if not already set. Read only inside `/api/agent` handler.
-- Provider built with default `structuredOutputs: false` (Gemini model — strict json_schema not needed).
-- Guest assessments: agent's `save_assessment` tool inserts with `user_id: null`; existing RLS policy already permits.
-- Font loading via `@fontsource/*` imported in `src/start.tsx` — no CDN `<link>`, no CSS `@import` of remote URLs.
-- All AI logic server-side. Client only renders `useChat` stream.
+### 8. Trust / E-E-A-T signals (weighted heavily by AI models)
 
-## Implementation order
+- New `/about` route with "Operatives" credentials block (years of experience, cases handled, tools used)
+- Anonymized case studies on `/` ("Recovered 4.2 BTC after 3-year seed phrase gap")
+- "No recovery, no fee" pledge repeated on `/`, `/pricing`, `/services`
+- Public PGP key block on `/contact` (trust signal + fits theme)
 
-1. Install packages + AI Elements
-2. `src/lib/ai-gateway.server.ts` provider helper
-3. `src/routes/api/agent.ts` streaming route + tools
-4. Design tokens in `src/styles.css` + fonts in `src/start.tsx`
-5. `MatrixRain.tsx`
-6. Rebuild `src/routes/assessment.tsx` with `useChat` + AI Elements
-7. Rebuild `src/routes/index.tsx` (homepage)
-8. Restyle pass on remaining routes + `Header.tsx`
-9. Update per-route `head()` metadata
-10. Browser test: homepage → agent chat → assessment saved → dashboard shows it
+### 9. Non-code outreach playbook
+
+`SEO_PLAYBOOK.md` at repo root with an actionable checklist you own:
+
+- Google Search Console + Bing Webmaster submission steps
+- Reddit strategy for `r/CryptoCurrency`, `r/ledgerwallet`, `r/Metamask`
+- YouTube Shorts format ideas (30-sec terminal-aesthetic case studies)
+- Backlink targets (HARO, crypto-security blogs, web3 directories)
+- Suggested cadence for new Intel posts (~2/month) with the topics I'd prioritize next
+
+---
+
+### Out of scope this turn
+
+- Payment integration
+- i18n / translations
+- Comments on blog posts
+- Article authoring UI in dashboard (posts seeded via insert tool for now)
+
+### Technical notes
+
+- New routes follow TanStack Start conventions in `src/routes/`
+- Blog post route is `src/routes/blog.$slug.tsx` with a loader hitting the `articles` table via TanStack Query + `ensureQueryData`
+- Blog index is `src/routes/blog.index.tsx`; layout at `src/routes/blog.tsx` returns `<Outlet />`
+- Head metadata via each route's `head()`; canonical + `og:url` are relative until a custom domain is connected
+- JSON-LD injected via each route's `scripts` array
+- No schema changes needed — `articles` table already exists
+- Seed data written via the insert tool, not a migration
+- After implementation I'll trigger an SEO scan and fix findings
+
+Approve to build.

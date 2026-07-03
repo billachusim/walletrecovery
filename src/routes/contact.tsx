@@ -11,9 +11,13 @@ import { Mail, MapPin, Phone } from "lucide-react";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — Wallet Recovery" },
-      { name: "description", content: "Get in touch with the Wallet Recovery team for questions about our services, pricing, or your case." },
+      { title: "Contact — Wallet Recovery Agent | Reach a Human Operative" },
+      { name: "description", content: "Contact the Wallet Recovery Agent team. Direct email, encrypted channels, and 24-hour response for open cases. Free assessment before any commitment." },
+      { property: "og:title", content: "Contact Wallet Recovery Agent" },
+      { property: "og:description", content: "Reach a human operative. Encrypted channels available." },
+      { property: "og:url", content: "/contact" },
     ],
+    links: [{ rel: "canonical", href: "/contact" }],
   }),
   component: ContactPage,
 });
@@ -102,7 +106,7 @@ function ContactPage() {
 
       <footer className="border-t border-border px-4 py-10">
         <div className="mx-auto max-w-7xl text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} Wallet Recovery. All rights reserved.
+          &copy; {new Date().getFullYear()} wallet_recovery_agent // your operative on the inside
         </div>
       </footer>
     </div>

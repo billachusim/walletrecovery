@@ -6,9 +6,13 @@ import { Link } from "@tanstack/react-router";
 export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
-      { title: "Pricing — Wallet Recovery" },
-      { name: "description", content: "Transparent pricing for cryptocurrency wallet recovery. Free assessment. No recovery, no fee. Success-based pricing." },
+      { title: "Wallet Recovery Pricing — No Recovery, No Fee | Wallet Recovery Agent" },
+      { name: "description", content: "Transparent success-based pricing for crypto wallet recovery. Free assessment. You only pay a percentage of what we return. No recovery, no fee." },
+      { property: "og:title", content: "Wallet Recovery Pricing | Wallet Recovery Agent" },
+      { property: "og:description", content: "Free assessment. No recovery, no fee. Success-based pricing." },
+      { property: "og:url", content: "/pricing" },
     ],
+    links: [{ rel: "canonical", href: "/pricing" }],
   }),
   component: PricingPage,
 });
@@ -80,7 +84,7 @@ function PricingPage() {
 
       <footer className="border-t border-border px-4 py-10">
         <div className="mx-auto max-w-7xl text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} Wallet Recovery. All rights reserved.
+          &copy; {new Date().getFullYear()} wallet_recovery_agent // your operative on the inside
         </div>
       </footer>
     </div>
