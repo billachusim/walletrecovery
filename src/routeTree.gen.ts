@@ -14,6 +14,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AssessmentRouteImport } from './routes/assessment'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -45,6 +46,11 @@ const FaqRoute = FaqRouteImport.update({
   path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/assessment': typeof AssessmentRoute
   '/auth': typeof AuthRoute
+  '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/pricing': typeof PricingRoute
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/assessment': typeof AssessmentRoute
   '/auth': typeof AuthRoute
+  '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/pricing': typeof PricingRoute
@@ -98,6 +106,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/assessment': typeof AssessmentRoute
   '/auth': typeof AuthRoute
+  '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/pricing': typeof PricingRoute
@@ -111,6 +120,7 @@ export interface FileRouteTypes {
     | '/'
     | '/assessment'
     | '/auth'
+    | '/contact'
     | '/faq'
     | '/forgot-password'
     | '/pricing'
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
     | '/'
     | '/assessment'
     | '/auth'
+    | '/contact'
     | '/faq'
     | '/forgot-password'
     | '/pricing'
@@ -134,6 +145,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/assessment'
     | '/auth'
+    | '/contact'
     | '/faq'
     | '/forgot-password'
     | '/pricing'
@@ -147,6 +159,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AssessmentRoute: typeof AssessmentRoute
   AuthRoute: typeof AuthRoute
+  ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   PricingRoute: typeof PricingRoute
@@ -189,6 +202,13 @@ declare module '@tanstack/react-router' {
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -245,6 +265,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AssessmentRoute: AssessmentRoute,
   AuthRoute: AuthRoute,
+  ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   PricingRoute: PricingRoute,
@@ -254,3 +275,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
