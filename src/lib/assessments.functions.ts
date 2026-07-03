@@ -33,16 +33,43 @@ export const submitGuestAssessment = createServerFn({ method: "POST" })
       return { ok: false as const, error: error.message };
     }
 
+    const ref = String(row.id).slice(0, 8).toUpperCase();
+
+    // Fire-and-forget email dispatch (assessment-received to user + operator alert).
     try {
-      const { notifyOperatorNewAssessment } = await import("@/lib/notify.server");
-      void notifyOperatorNewAssessment(row);
+      const { enqueueTransactionalEmail } = await import("@/lib/email/enqueue.server");
+      void Promise.all([
+        enqueueTransactionalEmail({
+          templateName: "assessment-received",
+          recipientEmail: row.guest_email ?? undefined,
+          idempotencyKey: `assessment-received-${row.id}`,
+          templateData: {
+            case_ref: ref,
+            wallet_type: row.wallet_type,
+            loss_reason: row.loss_reason,
+            is_authenticated: false,
+          },
+        }),
+        enqueueTransactionalEmail({
+          templateName: "operator-new-assessment",
+          idempotencyKey: `operator-new-assessment-${row.id}`,
+          templateData: {
+            case_ref: ref,
+            wallet_type: row.wallet_type,
+            loss_reason: row.loss_reason,
+            contact_email: row.guest_email,
+            estimated_value: row.estimated_value,
+            recovery_probability: row.recovery_probability,
+            is_authenticated: false,
+          },
+        }),
+      ]).catch((err) => console.error("[assessment] email dispatch failed:", err));
     } catch (err) {
-      console.error("[assessment] notify import failed:", err);
+      console.error("[assessment] enqueue import failed:", err);
     }
 
     return {
       ok: true as const,
-      case_ref: String(row.id).slice(0, 8).toUpperCase(),
+      case_ref: ref,
     };
   });
-
