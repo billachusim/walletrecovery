@@ -3,6 +3,7 @@ import { convertToModelMessages, streamText, tool, stepCountIs, type UIMessage }
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
+import { notifyOperatorNewAssessment } from "@/lib/notify.server";
 
 const SYSTEM_PROMPT = `You are AGENT.rcv — a laconic, competent operative for Wallet Recovery Agent, in a green-on-black terminal.
 Voice: terse, technical, lowercase where natural. No exclamation marks. No hype. Prefix system messages with '>' occasionally.
@@ -95,9 +96,11 @@ export const Route = createFileRoute("/api/agent")({
                 estimated_value: input.estimated_value_usd,
                 recovery_probability: input.recovery_probability,
               })
-              .select("id")
+              .select("id, wallet_type, loss_reason, guest_email, estimated_value, recovery_probability")
               .single();
             if (error) return { ok: false, error: error.message };
+            // Fire-and-forget operator notification. No-ops if email not configured.
+            void notifyOperatorNewAssessment(data);
             return { ok: true, case_ref: String(data.id).slice(0, 8).toUpperCase(), full_id: data.id };
           },
         });
