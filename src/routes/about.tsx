@@ -5,11 +5,11 @@ import { ArrowRight, ShieldCheck, Terminal, Users } from "lucide-react";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — Wallet Recovery Agent | Who Recovers Your Crypto" },
+      { title: "About — Wallet Recovery Agent" },
       {
         name: "description",
         content:
-          "Meet the operatives behind Wallet Recovery Agent. Forensic engineers, crypto veterans, and security researchers with 10+ years recovering lost wallets. No recovery, no fee.",
+          "Meet the operatives behind Wallet Recovery Agent — forensic engineers and crypto veterans recovering lost wallets. No recovery, no fee.",
       },
       { property: "og:title", content: "About Wallet Recovery Agent" },
       { property: "og:description", content: "Who we are. Why you can trust us with your case." },
