@@ -38,6 +38,7 @@ import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]
 import { Route as AuthenticatedConsoleIndexRouteImport } from './routes/_authenticated/console.index'
 import { Route as AuthenticatedConsoleCasesRouteImport } from './routes/_authenticated/console.cases'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedConsoleCaseIdRouteImport } from './routes/_authenticated/console.case.$id'
 import { Route as AuthenticatedConsoleAssessmentIdRouteImport } from './routes/_authenticated/console.assessment.$id'
 
@@ -191,6 +192,11 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedConsoleCaseIdRoute =
   AuthenticatedConsoleCaseIdRouteImport.update({
     id: '/case/$id',
@@ -230,6 +236,7 @@ export interface FileRoutesByFullPath {
   '/recover/seed-phrase': typeof RecoverSeedPhraseRoute
   '/recover/trust-wallet': typeof RecoverTrustWalletRoute
   '/blog/': typeof BlogIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/console/cases': typeof AuthenticatedConsoleCasesRoute
   '/console/': typeof AuthenticatedConsoleIndexRoute
@@ -260,6 +267,7 @@ export interface FileRoutesByTo {
   '/recover/seed-phrase': typeof RecoverSeedPhraseRoute
   '/recover/trust-wallet': typeof RecoverTrustWalletRoute
   '/blog': typeof BlogIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/console/cases': typeof AuthenticatedConsoleCasesRoute
   '/console': typeof AuthenticatedConsoleIndexRoute
@@ -294,6 +302,7 @@ export interface FileRoutesById {
   '/recover/seed-phrase': typeof RecoverSeedPhraseRoute
   '/recover/trust-wallet': typeof RecoverTrustWalletRoute
   '/blog/': typeof BlogIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_authenticated/console/cases': typeof AuthenticatedConsoleCasesRoute
   '/_authenticated/console/': typeof AuthenticatedConsoleIndexRoute
@@ -328,6 +337,7 @@ export interface FileRouteTypes {
     | '/recover/seed-phrase'
     | '/recover/trust-wallet'
     | '/blog/'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/console/cases'
     | '/console/'
@@ -358,6 +368,7 @@ export interface FileRouteTypes {
     | '/recover/seed-phrase'
     | '/recover/trust-wallet'
     | '/blog'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/console/cases'
     | '/console'
@@ -391,6 +402,7 @@ export interface FileRouteTypes {
     | '/recover/seed-phrase'
     | '/recover/trust-wallet'
     | '/blog/'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/_authenticated/console/cases'
     | '/_authenticated/console/'
@@ -421,6 +433,7 @@ export interface RootRouteChildren {
   RecoverMetamaskRoute: typeof RecoverMetamaskRoute
   RecoverSeedPhraseRoute: typeof RecoverSeedPhraseRoute
   RecoverTrustWalletRoute: typeof RecoverTrustWalletRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 
@@ -629,6 +642,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/console/case/$id': {
       id: '/_authenticated/console/case/$id'
       path: '/case/$id'
@@ -712,6 +732,7 @@ const rootRouteChildren: RootRouteChildren = {
   RecoverMetamaskRoute: RecoverMetamaskRoute,
   RecoverSeedPhraseRoute: RecoverSeedPhraseRoute,
   RecoverTrustWalletRoute: RecoverTrustWalletRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
 }
 export const routeTree = rootRouteImport
