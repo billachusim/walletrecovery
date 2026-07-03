@@ -1,166 +1,92 @@
-# Wallet Recovery as a Service (WRaaS) Platform
+# Recovery Agent — Matrix Rebrand + AI Agent Assessment
 
-## Overview
-Build a full-stack recovery platform for end customers who have lost access to cryptocurrency wallets. The platform prioritizes trust and transparency — essential in a market plagued by scams. It enables free recovery assessments, secure case submission with progress tracking, encrypted messaging, and educational content to build credibility.
+Rebrand the platform to **Recovery Agent** with a green-on-black Matrix/hacker aesthetic, and replace the current 3-step form assessment with a conversational AI agent that qualifies cases in the browser. Paid recovery still handed off to human "senior operatives" — that handoff is the trust anchor.
 
-## Phase 1: Infrastructure & Auth
+## 1. Brand + Copy
 
-### 1.1 Enable Lovable Cloud
-- Activate Supabase-backed Lovable Cloud for auth, database, file storage, and serverless functions.
+- Name: **Recovery Agent** (from "Wallet Recovery")
+- Tagline: *"Your operative on the inside."*
+- Voice: terse, terminal-flavored, competent. No exclamation marks. Prefix section labels with `>` and `//`.
+- Update: header logo, footer, page titles/meta, hero copy, all references to "Wallet Recovery" across `Header.tsx`, `__root.tsx`, `index.tsx`, `services.tsx`, `pricing.tsx`, `faq.tsx`, `contact.tsx`, `auth.tsx`.
 
-### 1.2 Authentication
-- Email/password authentication + Google sign-in.
-- Password reset flow (`/auth` public route, `/reset-password` page).
-- User profiles table (`profiles`) linked to `auth.users(id)` with auto-creation trigger.
-- Profile fields: full_name, display_name, avatar_url, phone, created_at, updated_at.
-- Role-based access: `user` (customer) and `staff` (recovery team) via `user_roles` table.
-- Auth state listener in `__root.tsx` for session changes.
-- Protected routes under `/_authenticated/` with managed layout.
-- Supabase auth attacher middleware in `src/start.ts`.
+## 2. Design System (Matrix theme)
 
-## Phase 2: Database Schema
+`src/styles.css` — dark-first OKLCH tokens:
+- `--background` near-black with green cast, `--foreground` phosphor green
+- `--primary` matrix green (filled, on black, `text-glow`); `--accent` neon cyan
+- Card = darker panel + 1px green border + scanline overlay
+- Fonts: JetBrains Mono (headings/UI), Inter (body) — installed via `@fontsource/*` and imported in `src/start.tsx`
+- Utilities: `.scanlines`, `.crt-flicker`, `.text-glow`, `.terminal-caret` (blinking)
 
-### Tables
-1. **profiles** — user profile data (FK to auth.users)
-2. **user_roles** — role assignments (customer, staff, admin)
-3. **assessments** — free recovery assessment submissions
-   - id, user_id, wallet_type, loss_reason, details, partial_phrase, partial_password_hints, estimated_value, recovery_probability (staff-computed), status (pending/quoted/declined), created_at
-4. **cases** — active recovery cases
-   - id, user_id, assessment_id (nullable), title, description, wallet_type, status (submitted/in_review/forensics/recovery_attempt/success/failed/closed), estimated_value, fee_percentage, fee_amount, recovered_amount, created_at, updated_at, closed_at
-5. **case_updates** — progress updates on cases
-   - id, case_id, author_id (staff), message, stage, created_at
-6. **case_messages** — secure messaging between customer and staff
-   - id, case_id, sender_id, content, is_internal (staff-only flag), created_at
-7. **documents** — file uploads linked to cases
-   - id, case_id, file_name, file_path (storage), file_type, uploaded_by, created_at
-8. **articles** — educational content / blog posts
-   - id, title, slug, content, excerpt, author_id, published, created_at, updated_at
+`src/components/MatrixRain.tsx` — canvas rain, `pointer-events: none`, ~20fps, hidden on `prefers-reduced-motion: reduce`. Behind hero only, not full-app.
 
-### RLS Policies
-- Customers: read/write own assessments, read/write own cases, read own messages, read own documents.
-- Staff: read all assessments, cases, messages, documents; write case updates and messages.
-- Articles: public read for published articles.
+Shadcn: keep components, restyle via tokens + variants. No hardcoded colors in components.
 
-### Row-Level Security Functions
-- `has_role(user_id, role)` security definer function for role checks.
+## 3. AI Agent Assessment (the core change)
 
-## Phase 3: Route Structure
+**Replace** the current 3-step form on `/assessment` with a terminal-style chat:
 
-### Public Routes
-- `/` — Landing page (hero, trust signals, how it works, testimonials preview, CTA to assess)
-- `/services` — Detailed service descriptions (password recovery, phrase reconstruction, file corruption, device damage)
-- `/how-it-works` — Step-by-step process transparency
-- `/pricing` — Fee structure (free assessment, forensic analysis, success-based fees)
-- `/faq` — Frequently asked questions
-- `/blog` or `/learn` — Educational articles and guides
-- `/about` — Company info, team, trust credentials
-- `/contact` — Contact form and support info
-- `/auth` — Login/signup page
-- `/reset-password` — Password reset page
-- `/assessment` — Free recovery assessment form (public, no auth required to start)
+- New server route: `src/routes/api/agent.ts` — POST handler using AI SDK `streamText` through Lovable AI Gateway (`google/gemini-3-flash-preview`).
+- New provider helper: `src/lib/ai-gateway.server.ts` (canonical Lovable Gateway snippet).
+- System prompt: the Agent is a laconic recovery operative. It gathers wallet type, what's lost, approximate value, last-known access details, seed fragments, device history. It never asks for full seed phrases or private keys — hard rule in prompt.
+- Tools (AI SDK `tool` + Zod `inputSchema`):
+  - `save_assessment` — writes to existing `public.assessments` (works for guests via `user_id IS NULL` policy already in place). Returns assessment id + probability.
+  - `estimate_probability` — pure function returning a probability band based on wallet type + info completeness.
+- Loop control: `stopWhen: stepCountIs(50)`.
+- Client: new `src/routes/assessment.tsx` using `useChat` + `DefaultChatTransport`, AI Elements (`conversation`, `message`, `prompt-input`, `shimmer`, `tool`). Assistant messages have no background; user messages are `primary`/`primary-foreground`. Render `message.parts`. Tool activity collapsed by default.
+- Pre-fill from homepage CTA via `Route.useSearch()` seeds the agent's opening question.
+- Handoff: when `save_assessment` succeeds, agent posts a final message with the case ref and a `[ Contact senior operative → ]` link (to `/auth` for guests, `/dashboard` for logged-in).
 
-### Protected Routes (`/_authenticated/`)
-- `/dashboard` — Customer dashboard (my cases, assessments, messages)
-- `/cases` — List of user's cases
-- `/cases/$caseId` — Case detail with timeline, messages, documents
-- `/assessments` — List of user's assessments
-- `/assessments/$assessmentId` — Assessment detail and quote
-- `/messages` — Message inbox
-- `/profile` — Edit profile
+Install AI Elements: `bun x ai-elements@latest add conversation message prompt-input shimmer tool`.
 
-### Staff Routes (`/_authenticated/staff/`)
-- `/staff/dashboard` — Staff overview (pending assessments, active cases)
-- `/staff/assessments` — Manage all assessments
-- `/staff/cases` — Manage all cases
-- `/staff/cases/$caseId` — Case management detail
-- `/staff/articles` — Manage educational articles
+Packages to add: `ai`, `@ai-sdk/openai-compatible`, `@ai-sdk/react`, `zod` (if not present), `@fontsource/jetbrains-mono`, `@fontsource/inter`.
 
-## Phase 4: Core Features Implementation
+## 4. Homepage rebuild (`src/routes/index.tsx`)
 
-### 4.1 Free Recovery Assessment (Public)
-- Multi-step form: wallet type, loss scenario, available clues, estimated value, contact info.
-- Validation with Zod.
-- Server function to create assessment record.
-- Immediate acknowledgment + email notification.
-- Staff review workflow to compute recovery probability and send quote.
+- Hero: Matrix rain backdrop, monospace headline "> initiate_recovery", subhead, single CTA `[ TALK TO AGENT → ]` linking `/assessment`. Small terminal-style sign-in link.
+- Below fold: `> stats.json`, `> how_it_works.log` (3 steps: talk to agent → forensic review → recovery), `> testimonials.txt`, `> operatives.txt` (trust: credentials, no-recovery-no-fee).
+- Footer: terminal-style legal + links.
 
-### 4.2 Case Submission & Tracking
-- Convert approved assessments into cases, or direct case creation.
-- Case status pipeline: Submitted → In Review → Forensics → Recovery Attempt → Success/Failed/Closed.
-- Timeline UI showing status history and updates.
-- Document upload to Supabase Storage (wallet files, device images, screenshots).
-- Secure file handling with signed URLs.
+## 5. Route restyle pass (no logic changes)
 
-### 4.3 Secure Messaging
-- Threaded messaging per case (customer ↔ staff).
-- Real-time updates via Supabase Realtime.
-- Internal staff-only notes flag.
-- Message history with timestamps.
+`services.tsx`, `pricing.tsx`, `faq.tsx`, `contact.tsx`, `auth.tsx`, `forgot-password.tsx`, `reset-password.tsx`, `_authenticated/dashboard.tsx`, `Header.tsx`:
+- Monospace headings prefixed with `>`, `── section ──` dividers
+- Terminal-style form fields (transparent, green underline focus)
+- Auth: "> login --secure" / "> register --new-operative"
+- Dashboard: "control room" — file-tree sidebar, neon status pills, monospace tables
+- Per-route `head()` metadata updated to Recovery Agent branding (title, description, og:title, og:description)
 
-### 4.4 Educational Content
-- Public article listing and detail pages.
-- Markdown-like rich text rendering (no dangerouslySetInnerHTML).
-- Article categories: wallet safety, recovery tips, how-to guides, scam awareness.
-- SEO-optimized with route-level head() metadata.
+## 6. Accessibility
 
-### 4.5 Dashboard
-- Customer: summary cards (active cases, pending assessments, unread messages), recent activity feed.
-- Staff: workload overview, pending items queue, quick actions.
+- Matrix rain hidden on `prefers-reduced-motion: reduce`
+- Text-glow tuned down on body copy (headings only) for readability
+- All interactive elements keep visible green focus rings
+- Contrast: body text passes AA on the dark background
 
-## Phase 5: UI/UX & Design
+## 7. Out of scope
 
-### Visual Direction
-- Trust-first, professional, calm aesthetic.
-- Dark mode support via existing CSS tokens.
-- Clean typography, generous whitespace.
-- Security badges, SSL indicators, process transparency as visual trust signals.
-- Progress indicators for case status.
-- Card-based layouts for dashboards.
+- No new DB tables (existing `assessments`, `cases`, `case_messages`, etc. are reused).
+- No schema changes beyond possibly adding a `transcript jsonb` column on `assessments` to store the agent conversation (only if needed — deferred if we can pack it into existing `additional_info`).
+- No Stripe/payments, no staff console changes, no realtime messaging changes.
+- No new languages, no analytics dashboards.
 
-### Components Needed
-- Header with navigation (public) / sidebar (authenticated).
-- Footer with trust signals, legal links, contact.
-- Assessment multi-step form.
-- Case timeline/status tracker.
-- Messaging thread component.
-- Document upload/download.
-- Dashboard stat cards and activity feed.
-- Article card and detail layouts.
-- Staff data tables with filtering.
+## Technical notes
 
-## Phase 6: Legal & Compliance Surface
+- `LOVABLE_API_KEY` provisioned via `lovable_api_key--create` if not already set. Read only inside `/api/agent` handler.
+- Provider built with default `structuredOutputs: false` (Gemini model — strict json_schema not needed).
+- Guest assessments: agent's `save_assessment` tool inserts with `user_id: null`; existing RLS policy already permits.
+- Font loading via `@fontsource/*` imported in `src/start.tsx` — no CDN `<link>`, no CSS `@import` of remote URLs.
+- All AI logic server-side. Client only renders `useChat` stream.
 
-### Public Trust Pages
-- `/privacy` — Privacy policy (data handling, retention).
-- `/terms` — Terms of service (liability, success-based fees, chain of custody).
-- `/security` — Security practices (encryption, storage, access controls).
-- Builder-attributed content only — no unverified certifications.
+## Implementation order
 
-## Technical Stack
-
-- **Frontend**: React 19 + TanStack Start (SSR/SSG) + Tailwind CSS v4 + shadcn/ui components
-- **Backend**: TanStack server functions (`createServerFn`) + Supabase Data API
-- **Auth**: Lovable Cloud (Supabase Auth) — email/password + Google OAuth
-- **Database**: PostgreSQL via Supabase with RLS policies
-- **Storage**: Supabase Storage for case documents
-- **Realtime**: Supabase Realtime for messaging
-- **Validation**: Zod for all forms and API inputs
-- **Payments**: Stripe integration for forensic analysis deposits and success fees (Phase 2)
-
-## Out of Scope for V1
-- Payment processing (Stripe) — included in schema but UI deferred to v2.
-- AI-assisted password generation tools — conceptual placeholder only.
-- Enterprise/law firm portal — B2B features deferred.
-- Multi-language support.
-- Advanced analytics dashboard for staff.
-
-## Implementation Order
-1. Enable Lovable Cloud + configure auth + create database schema.
-2. Build public landing page + auth pages.
-3. Build assessment form (public) + assessment list/detail (protected).
-4. Build case management (submission, tracking, documents) — protected.
-5. Build messaging system — protected.
-6. Build educational content pages + staff article management.
-7. Build dashboards (customer + staff).
-8. Build trust/legal pages (privacy, terms, security).
-9. Polish, test, and publish.
+1. Install packages + AI Elements
+2. `src/lib/ai-gateway.server.ts` provider helper
+3. `src/routes/api/agent.ts` streaming route + tools
+4. Design tokens in `src/styles.css` + fonts in `src/start.tsx`
+5. `MatrixRain.tsx`
+6. Rebuild `src/routes/assessment.tsx` with `useChat` + AI Elements
+7. Rebuild `src/routes/index.tsx` (homepage)
+8. Restyle pass on remaining routes + `Header.tsx`
+9. Update per-route `head()` metadata
+10. Browser test: homepage → agent chat → assessment saved → dashboard shows it
