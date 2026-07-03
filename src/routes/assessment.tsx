@@ -1,292 +1,209 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ArrowRight, ArrowLeft, CheckCircle } from "lucide-react";
+import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport, type UIMessage } from "ai";
+import { useEffect, useRef, useState } from "react";
+import { Header } from "@/components/Header";
+import { Terminal, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/assessment")({
   head: () => ({
     meta: [
-      { title: "Free Recovery Assessment — Wallet Recovery" },
-      { name: "description", content: "Submit a free recovery assessment for your lost cryptocurrency wallet. We analyze your situation and estimate recovery probability." },
+      { title: "Talk to the Agent — Recovery Agent" },
+      { name: "description", content: "A private terminal chat with the Recovery Agent. Qualify your lost-wallet case in minutes." },
     ],
   }),
   component: AssessmentPage,
 });
 
-const WALLET_TYPES = [
-  "Bitcoin (BTC)",
-  "Ethereum (ETH)",
-  "Litecoin (LTC)",
-  "Ripple (XRP)",
-  "Cardano (ADA)",
-  "Solana (SOL)",
-  "Hardware Wallet (Ledger/Trezor)",
-  "Multi-currency Wallet",
-  "Other",
-];
-
-const LOSS_REASONS = [
-  "Forgot password",
-  "Partial recovery phrase (missing words)",
-  "Corrupted wallet file",
-  "Damaged device / hard drive",
-  "Deleted wallet file",
-  "Lost access to exchange account",
-  "Other",
+const INITIAL_MESSAGES: UIMessage[] = [
+  {
+    id: "agent-boot-1",
+    role: "assistant",
+    parts: [
+      {
+        type: "text",
+        text: "> connection established\n> node: agent.rcv // status: online\n> encryption: end-to-end\n\nhi. i'm agent.rcv. i qualify recovery cases before handing them to a senior operative.\n\nlet's start simple — what kind of wallet are we recovering? (btc, eth, hardware ledger/trezor, exchange lockout, other)",
+      },
+    ],
+  },
 ];
 
 function AssessmentPage() {
-  const [step, setStep] = useState(1);
-  const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const transport = useRef(new DefaultChatTransport({ api: "/api/agent" })).current;
+  const { messages, sendMessage, status, error } = useChat({
+    transport,
+    messages: INITIAL_MESSAGES,
+  });
+  const [input, setInput] = useState("");
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const [walletType, setWalletType] = useState("");
-  const [lossReason, setLossReason] = useState("");
-  const [details, setDetails] = useState("");
-  const [partialPhrase, setPartialPhrase] = useState("");
-  const [passwordHints, setPasswordHints] = useState("");
-  const [estimatedValue, setEstimatedValue] = useState("");
-  const [guestEmail, setGuestEmail] = useState("");
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }, [messages, status]);
 
-  const handleSubmit = async () => {
-    setError(null);
-    setLoading(true);
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [status]);
 
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
+  const busy = status === "submitted" || status === "streaming";
 
-      const assessmentData = {
-        user_id: user?.id ?? null,
-        guest_email: guestEmail || null,
-        wallet_type: walletType,
-        loss_reason: lossReason,
-        details: details || null,
-        partial_phrase: partialPhrase || null,
-        partial_password_hints: passwordHints || null,
-        estimated_value: estimatedValue ? parseFloat(estimatedValue) : null,
-      };
-
-      const { error: insertError } = await supabase.from("assessments").insert(assessmentData);
-
-      if (insertError) {
-        setError(insertError.message);
-      } else {
-        setSubmitted(true);
-      }
-    } catch (e) {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  const submit = () => {
+    const text = input.trim();
+    if (!text || busy) return;
+    setInput("");
+    sendMessage({ text });
   };
-
-  if (submitted) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background px-4">
-        <Card className="w-full max-w-lg">
-          <CardContent className="pt-6 text-center">
-            <CheckCircle className="mx-auto h-12 w-12 text-emerald-500" />
-            <h2 className="mt-4 text-2xl font-bold text-foreground">Assessment Submitted</h2>
-            <p className="mt-2 text-muted-foreground">
-              Thank you for your submission. Our team will review your case and provide an estimated recovery probability within 24–48 hours.
-            </p>
-            <div className="mt-6 flex flex-col gap-3">
-              <Link
-                to="/"
-                className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-              >
-                Return to Home
-              </Link>
-              <Link
-                to="/auth"
-                className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-              >
-                Create an Account to Track Progress
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-          <Link to="/" className="text-xl font-bold tracking-tight text-foreground">
-            Wallet Recovery
-          </Link>
-          <Link
-            to="/auth"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground"
+      <Header />
+      <main className="mx-auto max-w-3xl px-4 py-8">
+        <div className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-primary/70">
+          // session: {new Date().toISOString().slice(0, 10)}
+        </div>
+        <div className="mb-6 flex items-baseline gap-3">
+          <Terminal className="h-5 w-5 text-primary text-glow-soft" />
+          <h1 className="font-mono text-2xl font-bold text-primary text-glow">
+            &gt; talk_to_agent
+          </h1>
+        </div>
+
+        <div className="scanlines rounded border border-primary/50 bg-card/70 shadow-[0_0_40px_oklch(0.78_0.22_145/0.15)]">
+          {/* Fake terminal titlebar */}
+          <div className="flex items-center justify-between border-b border-border/60 px-4 py-2 font-mono text-xs text-muted-foreground">
+            <span>agent.rcv@secure ~ tty0</span>
+            <span className="text-primary/70">● connected</span>
+          </div>
+
+          <div
+            ref={scrollRef}
+            className="h-[520px] overflow-y-auto px-4 py-4 font-mono text-sm leading-relaxed"
           >
-            Sign In
+            {messages.map((m) => (
+              <MessageRow key={m.id} m={m} />
+            ))}
+            {status === "submitted" && (
+              <div className="text-primary/70">
+                <span className="text-primary">agent</span> &raquo; <span className="opacity-60">thinking</span><span className="terminal-caret ml-1" aria-hidden="true" />
+              </div>
+            )}
+            {error && (
+              <div className="mt-2 rounded border border-destructive/60 bg-destructive/10 p-3 text-destructive-foreground">
+                &gt; error: {error.message || "connection lost. retry."}
+              </div>
+            )}
+          </div>
+
+          {/* Composer */}
+          <form
+            onSubmit={(e) => { e.preventDefault(); submit(); }}
+            className="flex items-end gap-2 border-t border-border/60 p-3"
+          >
+            <span className="pb-2 font-mono text-primary text-glow">&gt;</span>
+            <textarea
+              ref={inputRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  submit();
+                }
+              }}
+              rows={1}
+              disabled={busy}
+              placeholder="type here. shift+enter for newline."
+              className="max-h-32 min-h-[2.25rem] flex-1 resize-none bg-transparent font-mono text-sm text-foreground caret-primary outline-none placeholder:text-muted-foreground/50"
+            />
+            <button
+              type="submit"
+              disabled={busy || !input.trim()}
+              className="flex h-9 items-center gap-1 rounded border border-primary/70 bg-primary/10 px-3 font-mono text-xs uppercase tracking-wider text-primary hover:bg-primary hover:text-primary-foreground disabled:opacity-40"
+            >
+              [ send ] <ArrowRight className="h-3 w-3" />
+            </button>
+          </form>
+        </div>
+
+        <p className="mt-4 text-center font-mono text-xs text-muted-foreground">
+          the agent will never ask for a full seed phrase or private key. if it does, close this tab.
+          <br />
+          <Link to="/auth" className="mt-2 inline-block text-primary hover:text-glow">
+            [ create an account to track progress ]
           </Link>
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-2xl px-4 py-12">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Free Recovery Assessment</h1>
-          <p className="mt-2 text-muted-foreground">
-            Tell us about your wallet loss and we'll estimate your recovery chances. No obligation.
-          </p>
-        </div>
-
-        {error && (
-          <Alert variant="destructive" className="mb-6">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Step {step} of 3</CardTitle>
-            <CardDescription>
-              {step === 1 && "What type of wallet and loss scenario?"}
-              {step === 2 && "Provide details and any clues you have."}
-              {step === 3 && "Estimated value and contact information."}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {step === 1 && (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="walletType">Wallet Type</Label>
-                  <Select value={walletType} onValueChange={setWalletType}>
-                    <SelectTrigger id="walletType">
-                      <SelectValue placeholder="Select wallet type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {WALLET_TYPES.map((type) => (
-                        <SelectItem key={type} value={type}>{type}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lossReason">Loss Reason</Label>
-                  <Select value={lossReason} onValueChange={setLossReason}>
-                    <SelectTrigger id="lossReason">
-                      <SelectValue placeholder="Select reason" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {LOSS_REASONS.map((reason) => (
-                        <SelectItem key={reason} value={reason}>{reason}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="details">Additional Details</Label>
-                  <Textarea
-                    id="details"
-                    value={details}
-                    onChange={(e) => setDetails(e.target.value)}
-                    placeholder="Describe what happened, when you last had access, and anything else that might help..."
-                    rows={4}
-                  />
-                </div>
-              </div>
-            )}
-
-            {step === 2 && (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="partialPhrase">Partial Recovery Phrase (if applicable)</Label>
-                  <Textarea
-                    id="partialPhrase"
-                    value={partialPhrase}
-                    onChange={(e) => setPartialPhrase(e.target.value)}
-                    placeholder="Enter the words you remember, with placeholders for missing ones..."
-                    rows={3}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Only share what you are comfortable with. We never store raw recovery phrases in plain text.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="passwordHints">Password Hints or Patterns</Label>
-                  <Textarea
-                    id="passwordHints"
-                    value={passwordHints}
-                    onChange={(e) => setPasswordHints(e.target.value)}
-                    placeholder="Any patterns, words, or dates you might have used..."
-                    rows={3}
-                  />
-                </div>
-              </div>
-            )}
-
-            {step === 3 && (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="estimatedValue">Estimated Wallet Value (USD)</Label>
-                  <Input
-                    id="estimatedValue"
-                    type="number"
-                    value={estimatedValue}
-                    onChange={(e) => setEstimatedValue(e.target.value)}
-                    placeholder="e.g. 5000"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="guestEmail">Email Address</Label>
-                  <Input
-                    id="guestEmail"
-                    type="email"
-                    value={guestEmail}
-                    onChange={(e) => setGuestEmail(e.target.value)}
-                    placeholder="you@example.com"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    We will send your assessment results to this email.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            <div className="mt-8 flex items-center justify-between">
-              {step > 1 ? (
-                <Button variant="outline" onClick={() => setStep(step - 1)}>
-                  <ArrowLeft className="mr-2 h-4 w-4" /> Back
-                </Button>
-              ) : (
-                <div />
-              )}
-
-              {step < 3 ? (
-                <Button
-                  onClick={() => setStep(step + 1)}
-                  disabled={
-                    (step === 1 && (!walletType || !lossReason)) ||
-                    (step === 2 && false)
-                  }
-                >
-                  Next <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleSubmit}
-                  disabled={!guestEmail || !walletType || !lossReason || loading}
-                >
-                  {loading ? "Submitting..." : "Submit Assessment"}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        </p>
       </main>
     </div>
+  );
+}
+
+function MessageRow({ m }: { m: UIMessage }) {
+  const isUser = m.role === "user";
+  const text = m.parts
+    .map((p) => {
+      if (p.type === "text") return p.text;
+      if (p.type.startsWith("tool-")) return "";
+      return "";
+    })
+    .join("");
+
+  // Tool call badges
+  const toolParts = m.parts.filter((p) => p.type.startsWith("tool-"));
+
+  return (
+    <div className="mb-4">
+      <div className="mb-1 text-xs">
+        {isUser ? (
+          <span className="text-accent">user@you</span>
+        ) : (
+          <span className="text-primary text-glow-soft">agent.rcv</span>
+        )}
+        <span className="text-muted-foreground"> &raquo;</span>
+      </div>
+      {text && (
+        <div
+          className={
+            isUser
+              ? "whitespace-pre-wrap rounded border border-accent/40 bg-accent/10 px-3 py-2 text-foreground"
+              : "whitespace-pre-wrap text-foreground/90"
+          }
+        >
+          {text}
+        </div>
+      )}
+      {toolParts.map((tp, i) => (
+        <ToolBadge key={i} part={tp} />
+      ))}
+    </div>
+  );
+}
+
+function ToolBadge({ part }: { part: UIMessage["parts"][number] }) {
+  const anyPart = part as any;
+  const toolName = String(part.type).replace(/^tool-/, "");
+  const state: string = anyPart.state ?? "running";
+  const done = state === "output-available";
+  const output = anyPart.output;
+
+  return (
+    <details className="mt-2 rounded border border-primary/30 bg-background/40 px-3 py-1.5 font-mono text-xs">
+      <summary className="cursor-pointer list-none text-primary/80">
+        &gt; {toolName}
+        <span className="ml-2 text-muted-foreground">
+          [{done ? "done" : state === "input-available" ? "executing…" : "…"}]
+        </span>
+        {done && toolName === "save_assessment" && output?.ok && (
+          <span className="ml-2 text-primary text-glow-soft">
+            case ref: {output.case_ref}
+          </span>
+        )}
+      </summary>
+      {output && (
+        <pre className="mt-2 max-h-40 overflow-auto whitespace-pre-wrap text-muted-foreground">
+          {JSON.stringify(output, null, 2)}
+        </pre>
+      )}
+    </details>
   );
 }

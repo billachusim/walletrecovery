@@ -9,6 +9,13 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
+import "@fontsource/jetbrains-mono/400.css";
+import "@fontsource/jetbrains-mono/500.css";
+import "@fontsource/jetbrains-mono/700.css";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
@@ -78,11 +85,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Wallet Recovery — Secure Crypto Asset Recovery" },
-      { name: "description", content: "Professional cryptocurrency wallet recovery services. We help you recover lost passwords, corrupted wallet files, and incomplete recovery phrases. Free assessment, no recovery — no fee." },
-      { name: "author", content: "Wallet Recovery" },
-      { property: "og:title", content: "Wallet Recovery — Secure Crypto Asset Recovery" },
-      { property: "og:description", content: "Professional cryptocurrency wallet recovery services. We help you recover lost passwords, corrupted wallet files, and incomplete recovery phrases." },
+      { title: "Recovery Agent — Your Operative on the Inside" },
+      { name: "description", content: "Recovery Agent qualifies your lost crypto case in a private terminal chat, then hands off to a senior human operative. No recovery, no fee." },
+      { name: "author", content: "Recovery Agent" },
+      { property: "og:title", content: "Recovery Agent — Your Operative on the Inside" },
+      { property: "og:description", content: "Talk to the Agent. Recover your wallet. No recovery, no fee." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
