@@ -169,21 +169,21 @@
 
 @utility scanlines {
   position: relative;
-}
-@utility scanlines::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0px,
-    transparent 2px,
-    oklch(0.78 0.22 145 / 4%) 2px,
-    oklch(0.78 0.22 145 / 4%) 3px
-  );
-  mix-blend-mode: screen;
-  border-radius: inherit;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 2px,
+      oklch(0.78 0.22 145 / 4%) 2px,
+      oklch(0.78 0.22 145 / 4%) 3px
+    );
+    mix-blend-mode: screen;
+    border-radius: inherit;
+  }
 }
 
 @utility terminal-caret {
