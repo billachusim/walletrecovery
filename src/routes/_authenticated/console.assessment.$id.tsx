@@ -69,6 +69,7 @@ function AssessmentDetail() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const sendOpenedEmail = useServerFn(sendCaseOpenedEmail);
   const convertMutation = useMutation({
     mutationFn: async () => {
       if (!assessment) throw new Error("no assessment loaded");
@@ -93,6 +94,10 @@ function AssessmentDetail() {
         .single();
       if (error) throw error;
       await supabase.from("assessments").update({ status: "converted" }).eq("id", assessment.id);
+      // Fire the case-opened email (does not block navigation).
+      sendOpenedEmail({ data: { caseId: data.id as string } }).catch((err) =>
+        console.error("[convert] case-opened email failed:", err),
+      );
       return data.id as string;
     },
     onSuccess: (caseId) => {
