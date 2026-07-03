@@ -73,19 +73,19 @@ export function Header() {
       {mobileOpen && (
         <div className="border-t border-border/60 px-4 py-4 md:hidden">
           <nav className="flex flex-col gap-3 font-mono">
-            <Link to="/services" className={linkCls} onClick={() => setMobileOpen(false)}>// services</Link>
-            <Link to="/pricing" className={linkCls} onClick={() => setMobileOpen(false)}>// pricing</Link>
-            <Link to="/blog" className={linkCls} onClick={() => setMobileOpen(false)}>&gt; intel/</Link>
-            <Link to="/faq" className={linkCls} onClick={() => setMobileOpen(false)}>// faq</Link>
-            <Link to="/about" className={linkCls} onClick={() => setMobileOpen(false)}>// about</Link>
+            <Link to="/services" className={linkCls} onClick={() => setMobileOpen(false)}>/services</Link>
+            <Link to="/pricing" className={linkCls} onClick={() => setMobileOpen(false)}>/pricing</Link>
+            <Link to="/blog" className={linkCls} onClick={() => setMobileOpen(false)}>/intel</Link>
+            <Link to="/faq" className={linkCls} onClick={() => setMobileOpen(false)}>/faq</Link>
+            <Link to="/about" className={linkCls} onClick={() => setMobileOpen(false)}>/about</Link>
             <Link to="/assessment" className={linkCls} onClick={() => setMobileOpen(false)}>[ talk to agent ]</Link>
             {user ? (
               <>
-                <Link to="/dashboard" className={linkCls} onClick={() => setMobileOpen(false)}>// console</Link>
+                <Link to="/dashboard" className={linkCls} onClick={() => setMobileOpen(false)}>/console</Link>
                 <button onClick={handleSignOut} className={`${linkCls} text-left`}>exit</button>
               </>
             ) : (
-              <Link to="/auth" className={linkCls} onClick={() => setMobileOpen(false)}>~/login</Link>
+              <Link to="/auth" className={linkCls} onClick={() => setMobileOpen(false)}>/login</Link>
             )}
           </nav>
         </div>
