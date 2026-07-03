@@ -1,6 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { createClient } from "@supabase/supabase-js";
 
 const inputSchema = z.object({
   guest_email: z.string().email(),
@@ -12,17 +11,12 @@ const inputSchema = z.object({
 export const submitGuestAssessment = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => inputSchema.parse(data))
   .handler(async ({ data }) => {
-    const url = process.env.SUPABASE_URL;
-    const publishable = process.env.SUPABASE_PUBLISHABLE_KEY;
-    if (!url || !publishable) {
-      return { ok: false as const, error: "Server misconfigured." };
-    }
+    // Server-side privileged write: user-supplied fields are Zod-validated above
+    // and everything else is server-controlled. RLS SELECT would otherwise block
+    // the RETURNING clause for anon, so we use the admin client here.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const supabase = createClient(url, publishable, {
-      auth: { persistSession: false, autoRefreshToken: false, storage: undefined },
-    });
-
-    const { data: row, error } = await supabase
+    const { data: row, error } = await supabaseAdmin
       .from("assessments")
       .insert({
         user_id: null,
@@ -51,3 +45,4 @@ export const submitGuestAssessment = createServerFn({ method: "POST" })
       case_ref: String(row.id).slice(0, 8).toUpperCase(),
     };
   });
+
