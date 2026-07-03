@@ -33,6 +33,37 @@ const postQuery = (slug: string) =>
     },
   });
 
+type FaqItem = { q: string; a: string };
+
+const POST_FAQS: Record<string, FaqItem[]> = {
+  "coinbase-recovery-guide": [
+    {
+      q: "Can Coinbase reverse a transaction I sent to the wrong person?",
+      a: "No — and neither can anyone else. Public blockchain transactions are irreversible by design. Coinbase can sometimes recover funds you sent to your own Coinbase-controlled address on a supported wrong network, but never funds that left their custody to a third party.",
+    },
+    {
+      q: "How long does Coinbase account recovery take?",
+      a: "The mandatory security wait after a 2FA reset is typically 24–72 hours. Full ID-verified recovery for complex cases (email compromise, name changes, old accounts) can take 2–6 weeks. Wrong-chain deposit recoveries take 4–12 weeks when accepted.",
+    },
+    {
+      q: "Does Coinbase have a recovery phrase for my Coinbase.com account?",
+      a: "No. Only Coinbase Wallet (the self-custody product) uses a seed phrase. Coinbase.com custodial accounts use email, password, and 2FA — anyone asking for a Coinbase seed phrase for a Coinbase.com account is a scammer.",
+    },
+    {
+      q: "What does Coinbase's wrong-chain recovery cost?",
+      a: "Coinbase typically charges 5% of the recovered balance with a $100 minimum, only for supported networks and tokens, and only after a manual review that can take months. Unsupported networks are declined outright.",
+    },
+    {
+      q: "Is it safe to give a recovery service my seed phrase?",
+      a: "No. A legitimate recovery service will never require your full seed phrase in plaintext. Wallet Recovery Agent's workflow is built so that no operative ever sees a complete phrase — we use partial data, checksums, and cryptographic search. If anyone asks for your full 12 or 24 words up front, walk away.",
+    },
+    {
+      q: "Can I recover a Coinbase account with only my email?",
+      a: "Not on its own. You'll need the email, access to a linked payment method or ID, and either your 2FA or the ability to prove ownership via ID verification. If you've lost the email inbox too, escalate immediately — the account is at risk of takeover.",
+    },
+  ],
+};
+
 export const Route = createFileRoute("/blog/$slug")({
   loader: ({ params, context }) => context.queryClient.ensureQueryData(postQuery(params.slug)),
   head: ({ params, loaderData }) => {
@@ -46,6 +77,49 @@ export const Route = createFileRoute("/blog/$slug")({
     }
     const p = loaderData;
     const desc = p.excerpt ?? `${p.title} — Wallet Recovery Agent intel.`;
+    const faqs = POST_FAQS[params.slug];
+    const scripts: Array<{ type: string; children: string }> = [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: p.title,
+          description: desc,
+          datePublished: p.created_at,
+          dateModified: p.updated_at,
+          author: { "@type": "Organization", name: "Wallet Recovery Agent" },
+          publisher: { "@type": "Organization", name: "Wallet Recovery Agent" },
+          mainEntityOfPage: `/blog/${params.slug}`,
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: "/" },
+            { "@type": "ListItem", position: 2, name: "Intel", item: "/blog" },
+            { "@type": "ListItem", position: 3, name: p.title, item: `/blog/${params.slug}` },
+          ],
+        }),
+      },
+    ];
+    if (faqs) {
+      scripts.push({
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }),
+      });
+    }
     return {
       meta: [
         { title: `${p.title} — Wallet Recovery Agent` },
@@ -54,41 +128,13 @@ export const Route = createFileRoute("/blog/$slug")({
         { property: "og:description", content: desc },
         { property: "og:type", content: "article" },
         { property: "og:url", content: `/blog/${params.slug}` },
+        { property: "og:image", content: "/og-image.png" },
+        { name: "twitter:image", content: "/og-image.png" },
         { property: "article:published_time", content: p.created_at },
         { property: "article:modified_time", content: p.updated_at },
       ],
       links: [{ rel: "canonical", href: `/blog/${params.slug}` }],
-      scripts: [
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Article",
-            headline: p.title,
-            description: desc,
-            datePublished: p.created_at,
-            dateModified: p.updated_at,
-            author: { "@type": "Organization", name: "Wallet Recovery Agent" },
-            publisher: {
-              "@type": "Organization",
-              name: "Wallet Recovery Agent",
-            },
-            mainEntityOfPage: `/blog/${params.slug}`,
-          }),
-        },
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: "/" },
-              { "@type": "ListItem", position: 2, name: "Intel", item: "/blog" },
-              { "@type": "ListItem", position: 3, name: p.title, item: `/blog/${params.slug}` },
-            ],
-          }),
-        },
-      ],
+      scripts,
     };
   },
   component: BlogPost,
