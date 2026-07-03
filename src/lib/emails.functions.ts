@@ -20,13 +20,6 @@ async function loadCaseWithEmail(caseId: string) {
   return { caseRow, email: userRes.user.email };
 }
 
-async function requireStaff(supabase: ReturnType<typeof getSupabaseClientPlaceholder>) {
-  return null; // placeholder; middleware injects supabase
-}
-// Silence unused — kept for future.
-function getSupabaseClientPlaceholder() {
-  return null as never;
-}
 
 /** Sends the "case opened" email to the case owner. Staff only. */
 export const sendCaseOpenedEmail = createServerFn({ method: "POST" })
