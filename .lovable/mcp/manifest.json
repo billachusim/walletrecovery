@@ -12,7 +12,7 @@
   "mcp": {
     "server": {
       "name": "wallet-recovery-mcp",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "title": "Wallet Recovery Agent"
     },
     "tools": [
@@ -85,6 +85,156 @@
           },
           "required": [
             "case_id"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_assessment",
+        "title": "Create assessment",
+        "description": "Submit a new wallet recovery assessment for the signed-in user. Never include full seed phrases or private keys — only wallet type, loss reason, and safe details/hints.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "wallet_type": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Wallet or platform (e.g. bitcoin, ethereum, ledger, trezor, metamask, trust wallet, exchange lockout)."
+            },
+            "loss_reason": {
+              "type": "string",
+              "minLength": 1,
+              "description": "How access was lost (forgot password, partial seed, corrupted file, damaged device, deleted file, exchange lockout)."
+            },
+            "details": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Free-form context about the situation. Never include full seed phrases or private keys."
+            },
+            "partial_password_hints": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Hints/patterns about the password. Never full passwords."
+            },
+            "partial_phrase_word_count": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 24
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Number of seed words the user recalls. The words themselves are never stored."
+            },
+            "estimated_value_usd": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Rough USD value of the wallet."
+            }
+          },
+          "required": [
+            "wallet_type",
+            "loss_reason",
+            "details",
+            "partial_password_hints",
+            "partial_phrase_word_count",
+            "estimated_value_usd"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "open_case",
+        "title": "Open recovery case",
+        "description": "Open a formal recovery case for the signed-in user. Optionally link to an existing assessment.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Short case title, e.g. 'Ledger — forgotten PIN'."
+            },
+            "wallet_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Additional context. Never include seed phrases or private keys."
+            },
+            "estimated_value_usd": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "assessment_id": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Existing assessment id to attach to this case, if any."
+            }
+          },
+          "required": [
+            "title",
+            "wallet_type",
+            "description",
+            "estimated_value_usd",
+            "assessment_id"
           ]
         },
         "outputSchema": null
