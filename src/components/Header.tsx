@@ -2,7 +2,8 @@ import { Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, Menu, Terminal, X } from "lucide-react";
+import { LogOut, Menu, X } from "lucide-react";
+import { LogoMark } from "@/components/LogoMark";
 
 export function Header() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export function Header() {
     <header className="border-b border-border/60 bg-background/70 backdrop-blur relative z-20">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
         <Link to="/" className="flex items-center gap-2 font-mono text-lg font-bold tracking-tight text-primary text-glow">
-          <Terminal className="h-4 w-4" />
+          <LogoMark className="h-6 w-6 text-primary" />
           <span>wallet_recovery_agent</span>
           <span className="terminal-caret" aria-hidden="true" />
         </Link>
