@@ -36,6 +36,8 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Wallet Recovery Agent — Recover Lost Crypto Wallets" },
       { property: "og:description", content: "Talk to the Agent. Recover your wallet. No recovery, no fee." },
       { property: "og:url", content: "/" },
+      { property: "og:image", content: "/og-image.png" },
+      { name: "twitter:image", content: "/og-image.png" },
     ],
     links: [{ rel: "canonical", href: "/" }],
   }),
