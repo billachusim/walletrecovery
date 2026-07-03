@@ -38,23 +38,23 @@ export function Header() {
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">
-          <Link to="/services" className={linkCls}>// services</Link>
-          <Link to="/pricing" className={linkCls}>// pricing</Link>
-          <Link to="/blog" className={linkCls}>&gt; intel/</Link>
-          <Link to="/faq" className={linkCls}>// faq</Link>
-          <Link to="/about" className={linkCls}>// about</Link>
+          <Link to="/services" className={linkCls}>/services</Link>
+          <Link to="/pricing" className={linkCls}>/pricing</Link>
+          <Link to="/blog" className={linkCls}>/intel</Link>
+          <Link to="/faq" className={linkCls}>/faq</Link>
+          <Link to="/about" className={linkCls}>/about</Link>
           <Link to="/assessment" className="rounded border border-primary/60 bg-primary/10 px-3 py-1.5 font-mono text-xs uppercase tracking-wider text-primary hover:bg-primary hover:text-primary-foreground transition-colors">
             [ talk to agent ]
           </Link>
           {user ? (
             <>
-              <Link to="/dashboard" className={linkCls}>// console</Link>
+              <Link to="/dashboard" className={linkCls}>/console</Link>
               <Button variant="ghost" size="sm" onClick={handleSignOut} className="font-mono">
                 <LogOut className="mr-1 h-3.5 w-3.5" /> exit
               </Button>
             </>
           ) : (
-            <Link to="/auth" className={linkCls}>~/login</Link>
+            <Link to="/auth" className={linkCls}>/login</Link>
           )}
         </nav>
 
