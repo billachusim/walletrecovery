@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, tool, stepCountIs, type UIMessage } from "ai";
 import { z } from "zod";
-import { createClient } from "@supabase/supabase-js";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 import { notifyOperatorNewAssessment } from "@/lib/notify.server";
 
@@ -59,18 +58,15 @@ export const Route = createFileRoute("/api/agent")({
         const key = process.env.LOVABLE_API_KEY;
         if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
 
-        const url = process.env.SUPABASE_URL;
-        const publishable = process.env.SUPABASE_PUBLISHABLE_KEY;
-        if (!url || !publishable) return new Response("Missing Supabase env", { status: 500 });
-
         const body = (await request.json()) as { messages?: UIMessage[] };
         if (!Array.isArray(body.messages)) {
           return new Response("messages required", { status: 400 });
         }
 
-        const supabase = createClient(url, publishable, {
-          auth: { persistSession: false, autoRefreshToken: false, storage: undefined },
-        });
+        // Privileged server-side write: model output goes through the Zod schema
+        // on saveAssessment. RLS SELECT would block anon's RETURNING clause, so
+        // we use the admin client here for the insert path only.
+        const { supabaseAdmin: supabase } = await import("@/integrations/supabase/client.server");
 
         const saveAssessment = tool({
           description: "Persist the recovery assessment to the database. Call this once you have all core fields.",
