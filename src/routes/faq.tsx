@@ -10,8 +10,8 @@ import {
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
-      { title: "Wallet Recovery FAQ — How It Works, Cost, Safety | Wallet Recovery Agent" },
-      { name: "description", content: "Answers to the most common questions about crypto wallet recovery: what we can recover, how much it costs, how long it takes, and how we keep your keys safe. No recovery, no fee." },
+      { title: "Wallet Recovery FAQ | Wallet Recovery Agent" },
+      { name: "description", content: "Answers on crypto wallet recovery: what we can recover, cost, timelines, and how we keep your keys safe. No recovery, no fee." },
       { property: "og:title", content: "Wallet Recovery FAQ | Wallet Recovery Agent" },
       { property: "og:description", content: "How wallet recovery works, what it costs, and how we protect your keys." },
       { property: "og:url", content: "/faq" },

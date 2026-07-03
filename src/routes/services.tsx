@@ -13,8 +13,8 @@ const serviceSchemas = [
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Crypto Wallet Recovery Services — Seed, Password, Hardware, Exchange | Wallet Recovery Agent" },
-      { name: "description", content: "Full-service cryptocurrency wallet recovery: seed phrase reconstruction, password brute-force, Ledger/Trezor hardware wallet recovery, corrupted file repair, exchange lockout support. No recovery, no fee." },
+      { title: "Crypto Wallet Recovery Services | Wallet Recovery Agent" },
+      { name: "description", content: "Seed phrase reconstruction, password brute-force, Ledger/Trezor recovery, corrupted files, exchange lockouts. No recovery, no fee." },
       { property: "og:title", content: "Crypto Wallet Recovery Services | Wallet Recovery Agent" },
       { property: "og:description", content: "Seed, password, hardware, exchange — every recovery service, one operative crew. No recovery, no fee." },
       { property: "og:url", content: "/services" },

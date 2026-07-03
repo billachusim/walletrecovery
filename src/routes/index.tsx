@@ -31,8 +31,8 @@ export const Route = createFileRoute("/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(latestPostsQuery),
   head: () => ({
     meta: [
-      { title: "Wallet Recovery Agent — Recover Lost Crypto Wallets & Seed Phrases" },
-      { name: "description", content: "Lost your seed phrase, forgot your wallet password, or bricked your Ledger? Wallet Recovery Agent runs a private AI-agent assessment then hands off to senior human operatives. No recovery, no fee." },
+      { title: "Wallet Recovery Agent — Talk to the Agent, Recover Crypto" },
+      { name: "description", content: "Lost your seed phrase, forgot your wallet password, or bricked your Ledger? Private AI assessment, senior human operatives. No recovery, no fee." },
       { property: "og:title", content: "Wallet Recovery Agent — Recover Lost Crypto Wallets" },
       { property: "og:description", content: "Talk to the Agent. Recover your wallet. No recovery, no fee." },
       { property: "og:url", content: "/" },

@@ -104,11 +104,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Wallet Recovery Agent — Recover Lost Crypto Wallets & Seed Phrases" },
+      { title: "Wallet Recovery Agent — Recover Lost Crypto Wallets" },
       {
         name: "description",
         content:
-          "Wallet Recovery Agent runs a private AI-agent case assessment, then hands off to senior human operatives to recover lost crypto — seed phrases, passwords, hardware wallets, exchange lockouts. No recovery, no fee.",
+          "Private AI assessment, senior human operatives. Recover seed phrases, wallet passwords, hardware wallets & exchange lockouts. No recovery, no fee.",
       },
       { name: "author", content: "Wallet Recovery Agent" },
       { name: "keywords", content: "wallet recovery, crypto wallet recovery, seed phrase recovery, forgot metamask password, ledger recovery, trezor recovery, lost bitcoin, lost crypto recovery" },

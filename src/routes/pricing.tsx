@@ -6,8 +6,8 @@ import { Link } from "@tanstack/react-router";
 export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
-      { title: "Wallet Recovery Pricing — No Recovery, No Fee | Wallet Recovery Agent" },
-      { name: "description", content: "Transparent success-based pricing for crypto wallet recovery. Free assessment. You only pay a percentage of what we return. No recovery, no fee." },
+      { title: "Pricing — No Recovery, No Fee | Wallet Recovery Agent" },
+      { name: "description", content: "Transparent success-based pricing for crypto wallet recovery. Free assessment. Pay a percentage only on recovery. No recovery, no fee." },
       { property: "og:title", content: "Wallet Recovery Pricing | Wallet Recovery Agent" },
       { property: "og:description", content: "Free assessment. No recovery, no fee. Success-based pricing." },
       { property: "og:url", content: "/pricing" },

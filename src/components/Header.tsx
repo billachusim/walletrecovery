@@ -58,7 +58,12 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2 md:hidden">
-          <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 text-primary">
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="p-2 text-primary"
+            aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
+          >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
