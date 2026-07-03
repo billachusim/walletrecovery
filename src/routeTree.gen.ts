@@ -30,6 +30,7 @@ import { Route as RecoverMetamaskRouteImport } from './routes/recover.metamask'
 import { Route as RecoverHardwareWalletRouteImport } from './routes/recover.hardware-wallet'
 import { Route as RecoverForgottenPasswordRouteImport } from './routes/recover.forgotten-password'
 import { Route as RecoverExchangeLockoutRouteImport } from './routes/recover.exchange-lockout'
+import { Route as RecoverCoinbaseRouteImport } from './routes/recover.coinbase'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ApiAgentRouteImport } from './routes/api/agent'
@@ -153,6 +154,11 @@ const RecoverExchangeLockoutRoute = RecoverExchangeLockoutRouteImport.update({
   path: '/recover/exchange-lockout',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecoverCoinbaseRoute = RecoverCoinbaseRouteImport.update({
+  id: '/recover/coinbase',
+  path: '/recover/coinbase',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
   id: '/email/unsubscribe',
   path: '/email/unsubscribe',
@@ -270,6 +276,7 @@ export interface FileRoutesByFullPath {
   '/api/agent': typeof ApiAgentRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/recover/coinbase': typeof RecoverCoinbaseRoute
   '/recover/exchange-lockout': typeof RecoverExchangeLockoutRoute
   '/recover/forgotten-password': typeof RecoverForgottenPasswordRoute
   '/recover/hardware-wallet': typeof RecoverHardwareWalletRoute
@@ -307,6 +314,7 @@ export interface FileRoutesByTo {
   '/api/agent': typeof ApiAgentRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/recover/coinbase': typeof RecoverCoinbaseRoute
   '/recover/exchange-lockout': typeof RecoverExchangeLockoutRoute
   '/recover/forgotten-password': typeof RecoverForgottenPasswordRoute
   '/recover/hardware-wallet': typeof RecoverHardwareWalletRoute
@@ -348,6 +356,7 @@ export interface FileRoutesById {
   '/api/agent': typeof ApiAgentRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/recover/coinbase': typeof RecoverCoinbaseRoute
   '/recover/exchange-lockout': typeof RecoverExchangeLockoutRoute
   '/recover/forgotten-password': typeof RecoverForgottenPasswordRoute
   '/recover/hardware-wallet': typeof RecoverHardwareWalletRoute
@@ -389,6 +398,7 @@ export interface FileRouteTypes {
     | '/api/agent'
     | '/blog/$slug'
     | '/email/unsubscribe'
+    | '/recover/coinbase'
     | '/recover/exchange-lockout'
     | '/recover/forgotten-password'
     | '/recover/hardware-wallet'
@@ -426,6 +436,7 @@ export interface FileRouteTypes {
     | '/api/agent'
     | '/blog/$slug'
     | '/email/unsubscribe'
+    | '/recover/coinbase'
     | '/recover/exchange-lockout'
     | '/recover/forgotten-password'
     | '/recover/hardware-wallet'
@@ -466,6 +477,7 @@ export interface FileRouteTypes {
     | '/api/agent'
     | '/blog/$slug'
     | '/email/unsubscribe'
+    | '/recover/coinbase'
     | '/recover/exchange-lockout'
     | '/recover/forgotten-password'
     | '/recover/hardware-wallet'
@@ -504,6 +516,7 @@ export interface RootRouteChildren {
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiAgentRoute: typeof ApiAgentRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
+  RecoverCoinbaseRoute: typeof RecoverCoinbaseRoute
   RecoverExchangeLockoutRoute: typeof RecoverExchangeLockoutRoute
   RecoverForgottenPasswordRoute: typeof RecoverForgottenPasswordRoute
   RecoverHardwareWalletRoute: typeof RecoverHardwareWalletRoute
@@ -665,6 +678,13 @@ declare module '@tanstack/react-router' {
       path: '/recover/exchange-lockout'
       fullPath: '/recover/exchange-lockout'
       preLoaderRoute: typeof RecoverExchangeLockoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recover/coinbase': {
+      id: '/recover/coinbase'
+      path: '/recover/coinbase'
+      fullPath: '/recover/coinbase'
+      preLoaderRoute: typeof RecoverCoinbaseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/email/unsubscribe': {
@@ -851,6 +871,7 @@ const rootRouteChildren: RootRouteChildren = {
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ApiAgentRoute: ApiAgentRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
+  RecoverCoinbaseRoute: RecoverCoinbaseRoute,
   RecoverExchangeLockoutRoute: RecoverExchangeLockoutRoute,
   RecoverForgottenPasswordRoute: RecoverForgottenPasswordRoute,
   RecoverHardwareWalletRoute: RecoverHardwareWalletRoute,
