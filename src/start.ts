@@ -3,7 +3,17 @@ import { createStart, createMiddleware } from "@tanstack/react-start";
 import { renderErrorPage } from "./lib/error-page";
 import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
 
-const errorMiddleware = createMiddleware().server(async ({ next }) => {
+const errorMiddleware = createMiddleware().server(async ({ next, request }) => {
+  // Internal email routes and one-click unsubscribe must bypass any app-level
+  // logic; each authenticates itself (API key / signed webhook / JWT).
+  const url = new URL(request.url);
+  if (
+    url.pathname.startsWith("/lovable/") ||
+    url.pathname === "/email/unsubscribe"
+  ) {
+    return next();
+  }
+
   try {
     return await next();
   } catch (error) {
