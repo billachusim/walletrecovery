@@ -9,19 +9,35 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AssessmentRouteImport } from './routes/assessment'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BlogIndexRouteImport } from './routes/blog.index'
+import { Route as RecoverTrustWalletRouteImport } from './routes/recover.trust-wallet'
+import { Route as RecoverSeedPhraseRouteImport } from './routes/recover.seed-phrase'
+import { Route as RecoverMetamaskRouteImport } from './routes/recover.metamask'
+import { Route as RecoverHardwareWalletRouteImport } from './routes/recover.hardware-wallet'
+import { Route as RecoverForgottenPasswordRouteImport } from './routes/recover.forgotten-password'
+import { Route as RecoverExchangeLockoutRouteImport } from './routes/recover.exchange-lockout'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ApiAgentRouteImport } from './routes/api/agent'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
@@ -52,6 +68,11 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -62,6 +83,11 @@ const AssessmentRoute = AssessmentRouteImport.update({
   path: '/assessment',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -70,6 +96,47 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BlogRoute,
+} as any)
+const RecoverTrustWalletRoute = RecoverTrustWalletRouteImport.update({
+  id: '/recover/trust-wallet',
+  path: '/recover/trust-wallet',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecoverSeedPhraseRoute = RecoverSeedPhraseRouteImport.update({
+  id: '/recover/seed-phrase',
+  path: '/recover/seed-phrase',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecoverMetamaskRoute = RecoverMetamaskRouteImport.update({
+  id: '/recover/metamask',
+  path: '/recover/metamask',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecoverHardwareWalletRoute = RecoverHardwareWalletRouteImport.update({
+  id: '/recover/hardware-wallet',
+  path: '/recover/hardware-wallet',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecoverForgottenPasswordRoute =
+  RecoverForgottenPasswordRouteImport.update({
+    id: '/recover/forgotten-password',
+    path: '/recover/forgotten-password',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const RecoverExchangeLockoutRoute = RecoverExchangeLockoutRouteImport.update({
+  id: '/recover/exchange-lockout',
+  path: '/recover/exchange-lockout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => BlogRoute,
 } as any)
 const ApiAgentRoute = ApiAgentRouteImport.update({
   id: '/api/agent',
@@ -84,19 +151,31 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/assessment': typeof AssessmentRoute
   '/auth': typeof AuthRoute
+  '/blog': typeof BlogRouteWithChildren
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/pricing': typeof PricingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/api/agent': typeof ApiAgentRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/recover/exchange-lockout': typeof RecoverExchangeLockoutRoute
+  '/recover/forgotten-password': typeof RecoverForgottenPasswordRoute
+  '/recover/hardware-wallet': typeof RecoverHardwareWalletRoute
+  '/recover/metamask': typeof RecoverMetamaskRoute
+  '/recover/seed-phrase': typeof RecoverSeedPhraseRoute
+  '/recover/trust-wallet': typeof RecoverTrustWalletRoute
+  '/blog/': typeof BlogIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/assessment': typeof AssessmentRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
@@ -105,41 +184,73 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/api/agent': typeof ApiAgentRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/recover/exchange-lockout': typeof RecoverExchangeLockoutRoute
+  '/recover/forgotten-password': typeof RecoverForgottenPasswordRoute
+  '/recover/hardware-wallet': typeof RecoverHardwareWalletRoute
+  '/recover/metamask': typeof RecoverMetamaskRoute
+  '/recover/seed-phrase': typeof RecoverSeedPhraseRoute
+  '/recover/trust-wallet': typeof RecoverTrustWalletRoute
+  '/blog': typeof BlogIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/about': typeof AboutRoute
   '/assessment': typeof AssessmentRoute
   '/auth': typeof AuthRoute
+  '/blog': typeof BlogRouteWithChildren
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/pricing': typeof PricingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/api/agent': typeof ApiAgentRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/recover/exchange-lockout': typeof RecoverExchangeLockoutRoute
+  '/recover/forgotten-password': typeof RecoverForgottenPasswordRoute
+  '/recover/hardware-wallet': typeof RecoverHardwareWalletRoute
+  '/recover/metamask': typeof RecoverMetamaskRoute
+  '/recover/seed-phrase': typeof RecoverSeedPhraseRoute
+  '/recover/trust-wallet': typeof RecoverTrustWalletRoute
+  '/blog/': typeof BlogIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/assessment'
     | '/auth'
+    | '/blog'
     | '/contact'
     | '/faq'
     | '/forgot-password'
     | '/pricing'
     | '/reset-password'
     | '/services'
+    | '/sitemap.xml'
     | '/dashboard'
     | '/api/agent'
+    | '/blog/$slug'
+    | '/recover/exchange-lockout'
+    | '/recover/forgotten-password'
+    | '/recover/hardware-wallet'
+    | '/recover/metamask'
+    | '/recover/seed-phrase'
+    | '/recover/trust-wallet'
+    | '/blog/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/assessment'
     | '/auth'
     | '/contact'
@@ -148,40 +259,76 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/reset-password'
     | '/services'
+    | '/sitemap.xml'
     | '/dashboard'
     | '/api/agent'
+    | '/blog/$slug'
+    | '/recover/exchange-lockout'
+    | '/recover/forgotten-password'
+    | '/recover/hardware-wallet'
+    | '/recover/metamask'
+    | '/recover/seed-phrase'
+    | '/recover/trust-wallet'
+    | '/blog'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/about'
     | '/assessment'
     | '/auth'
+    | '/blog'
     | '/contact'
     | '/faq'
     | '/forgot-password'
     | '/pricing'
     | '/reset-password'
     | '/services'
+    | '/sitemap.xml'
     | '/_authenticated/dashboard'
     | '/api/agent'
+    | '/blog/$slug'
+    | '/recover/exchange-lockout'
+    | '/recover/forgotten-password'
+    | '/recover/hardware-wallet'
+    | '/recover/metamask'
+    | '/recover/seed-phrase'
+    | '/recover/trust-wallet'
+    | '/blog/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AboutRoute: typeof AboutRoute
   AssessmentRoute: typeof AssessmentRoute
   AuthRoute: typeof AuthRoute
+  BlogRoute: typeof BlogRouteWithChildren
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   PricingRoute: typeof PricingRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiAgentRoute: typeof ApiAgentRoute
+  RecoverExchangeLockoutRoute: typeof RecoverExchangeLockoutRoute
+  RecoverForgottenPasswordRoute: typeof RecoverForgottenPasswordRoute
+  RecoverHardwareWalletRoute: typeof RecoverHardwareWalletRoute
+  RecoverMetamaskRoute: typeof RecoverMetamaskRoute
+  RecoverSeedPhraseRoute: typeof RecoverSeedPhraseRoute
+  RecoverTrustWalletRoute: typeof RecoverTrustWalletRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/services': {
       id: '/services'
       path: '/services'
@@ -224,6 +371,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -236,6 +390,13 @@ declare module '@tanstack/react-router' {
       path: '/assessment'
       fullPath: '/assessment'
       preLoaderRoute: typeof AssessmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -251,6 +412,62 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/blog/': {
+      id: '/blog/'
+      path: '/'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof BlogRoute
+    }
+    '/recover/trust-wallet': {
+      id: '/recover/trust-wallet'
+      path: '/recover/trust-wallet'
+      fullPath: '/recover/trust-wallet'
+      preLoaderRoute: typeof RecoverTrustWalletRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recover/seed-phrase': {
+      id: '/recover/seed-phrase'
+      path: '/recover/seed-phrase'
+      fullPath: '/recover/seed-phrase'
+      preLoaderRoute: typeof RecoverSeedPhraseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recover/metamask': {
+      id: '/recover/metamask'
+      path: '/recover/metamask'
+      fullPath: '/recover/metamask'
+      preLoaderRoute: typeof RecoverMetamaskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recover/hardware-wallet': {
+      id: '/recover/hardware-wallet'
+      path: '/recover/hardware-wallet'
+      fullPath: '/recover/hardware-wallet'
+      preLoaderRoute: typeof RecoverHardwareWalletRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recover/forgotten-password': {
+      id: '/recover/forgotten-password'
+      path: '/recover/forgotten-password'
+      fullPath: '/recover/forgotten-password'
+      preLoaderRoute: typeof RecoverForgottenPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recover/exchange-lockout': {
+      id: '/recover/exchange-lockout'
+      path: '/recover/exchange-lockout'
+      fullPath: '/recover/exchange-lockout'
+      preLoaderRoute: typeof RecoverExchangeLockoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof BlogRoute
     }
     '/api/agent': {
       id: '/api/agent'
@@ -280,19 +497,50 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface BlogRouteChildren {
+  BlogSlugRoute: typeof BlogSlugRoute
+  BlogIndexRoute: typeof BlogIndexRoute
+}
+
+const BlogRouteChildren: BlogRouteChildren = {
+  BlogSlugRoute: BlogSlugRoute,
+  BlogIndexRoute: BlogIndexRoute,
+}
+
+const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AboutRoute: AboutRoute,
   AssessmentRoute: AssessmentRoute,
   AuthRoute: AuthRoute,
+  BlogRoute: BlogRouteWithChildren,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   PricingRoute: PricingRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiAgentRoute: ApiAgentRoute,
+  RecoverExchangeLockoutRoute: RecoverExchangeLockoutRoute,
+  RecoverForgottenPasswordRoute: RecoverForgottenPasswordRoute,
+  RecoverHardwareWalletRoute: RecoverHardwareWalletRoute,
+  RecoverMetamaskRoute: RecoverMetamaskRoute,
+  RecoverSeedPhraseRoute: RecoverSeedPhraseRoute,
+  RecoverTrustWalletRoute: RecoverTrustWalletRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

@@ -10,8 +10,26 @@ import {
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
-      { title: "FAQ — Wallet Recovery" },
-      { name: "description", content: "Frequently asked questions about cryptocurrency wallet recovery, our process, fees, and security practices." },
+      { title: "Wallet Recovery FAQ — How It Works, Cost, Safety | Wallet Recovery Agent" },
+      { name: "description", content: "Answers to the most common questions about crypto wallet recovery: what we can recover, how much it costs, how long it takes, and how we keep your keys safe. No recovery, no fee." },
+      { property: "og:title", content: "Wallet Recovery FAQ | Wallet Recovery Agent" },
+      { property: "og:description", content: "How wallet recovery works, what it costs, and how we protect your keys." },
+      { property: "og:url", content: "/faq" },
+    ],
+    links: [{ rel: "canonical", href: "/faq" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: FAQS.map((f) => ({
+            "@type": "Question",
+            name: f.question,
+            acceptedAnswer: { "@type": "Answer", text: f.answer },
+          })),
+        }),
+      },
     ],
   }),
   component: FaqPage,
@@ -86,9 +104,9 @@ function FaqPage() {
         </Accordion>
       </main>
 
-      <footer className="border-t border-border px-4 py-10">
-        <div className="mx-auto max-w-7xl text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} Wallet Recovery. All rights reserved.
+      <footer className="border-t border-border/50 px-4 py-10">
+        <div className="mx-auto max-w-7xl text-center font-mono text-xs text-muted-foreground">
+          &copy; {new Date().getFullYear()} wallet_recovery_agent // your operative on the inside
         </div>
       </footer>
     </div>

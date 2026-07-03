@@ -32,14 +32,16 @@ export function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
         <Link to="/" className="flex items-center gap-2 font-mono text-lg font-bold tracking-tight text-primary text-glow">
           <Terminal className="h-4 w-4" />
-          <span>recovery_agent</span>
+          <span>wallet_recovery_agent</span>
           <span className="terminal-caret" aria-hidden="true" />
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">
           <Link to="/services" className={linkCls}>// services</Link>
           <Link to="/pricing" className={linkCls}>// pricing</Link>
+          <Link to="/blog" className={linkCls}>&gt; intel/</Link>
           <Link to="/faq" className={linkCls}>// faq</Link>
+          <Link to="/about" className={linkCls}>// about</Link>
           <Link to="/assessment" className="rounded border border-primary/60 bg-primary/10 px-3 py-1.5 font-mono text-xs uppercase tracking-wider text-primary hover:bg-primary hover:text-primary-foreground transition-colors">
             [ talk to agent ]
           </Link>
@@ -67,7 +69,9 @@ export function Header() {
           <nav className="flex flex-col gap-3 font-mono">
             <Link to="/services" className={linkCls} onClick={() => setMobileOpen(false)}>// services</Link>
             <Link to="/pricing" className={linkCls} onClick={() => setMobileOpen(false)}>// pricing</Link>
+            <Link to="/blog" className={linkCls} onClick={() => setMobileOpen(false)}>&gt; intel/</Link>
             <Link to="/faq" className={linkCls} onClick={() => setMobileOpen(false)}>// faq</Link>
+            <Link to="/about" className={linkCls} onClick={() => setMobileOpen(false)}>// about</Link>
             <Link to="/assessment" className={linkCls} onClick={() => setMobileOpen(false)}>[ talk to agent ]</Link>
             {user ? (
               <>

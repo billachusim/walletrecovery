@@ -8,9 +8,13 @@ import { Terminal, ArrowRight } from "lucide-react";
 export const Route = createFileRoute("/assessment")({
   head: () => ({
     meta: [
-      { title: "Talk to the Agent — Recovery Agent" },
-      { name: "description", content: "A private terminal chat with the Recovery Agent. Qualify your lost-wallet case in minutes." },
+      { title: "Free Wallet Recovery Assessment — Talk to an Agent | Wallet Recovery Agent" },
+      { name: "description", content: "Free private terminal chat with the Wallet Recovery Agent. Qualify your lost crypto wallet case in minutes. No plaintext seed required. No recovery, no fee." },
+      { property: "og:title", content: "Talk to the Agent — Wallet Recovery Agent" },
+      { property: "og:description", content: "Free private assessment. Recover your wallet." },
+      { property: "og:url", content: "/assessment" },
     ],
+    links: [{ rel: "canonical", href: "/assessment" }],
   }),
   component: AssessmentPage,
 });

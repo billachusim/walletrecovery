@@ -1,0 +1,32 @@
+# Wallet Recovery Agent
+
+> Your operative on the inside. AI-led case assessment, human-led crypto wallet recovery.
+> No recovery, no fee.
+
+Wallet Recovery Agent helps people recover lost, locked, or corrupted cryptocurrency
+wallets — seed phrases, forgotten passwords, hardware wallets (Ledger, Trezor),
+MetaMask, Trust Wallet, and exchange lockouts. Cases begin with a private AI-agent
+interview that qualifies the situation, then hand off to senior human operatives.
+
+## Core pages
+- [Services](/services): Full list of recovery services offered.
+- [Pricing](/pricing): No recovery, no fee. Success-based pricing.
+- [FAQ](/faq): How the process works, safety practices, timelines.
+- [Talk to Agent](/assessment): Start a free private case assessment.
+- [About](/about): Who the operatives are and why we can be trusted.
+- [Contact](/contact): Direct contact channels.
+
+## Recovery guides
+- [Seed phrase recovery](/recover/seed-phrase)
+- [Forgotten wallet password](/recover/forgotten-password)
+- [Hardware wallet recovery](/recover/hardware-wallet)
+- [MetaMask recovery](/recover/metamask)
+- [Trust Wallet recovery](/recover/trust-wallet)
+- [Exchange lockout recovery](/recover/exchange-lockout)
+
+## Intel (blog)
+- [All posts](/blog)
+
+## Safety
+Wallet Recovery Agent NEVER asks for full seed phrases or private keys during
+assessment. Any service that does is a scam.

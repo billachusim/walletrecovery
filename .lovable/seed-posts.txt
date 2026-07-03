@@ -1,0 +1,2 @@
+-- Seed 5 keyword-heavy intel posts for the blog
+-- (This file is for reference only; posts are inserted via the insert tool.)
