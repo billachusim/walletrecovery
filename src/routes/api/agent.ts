@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, tool, stepCountIs, type UIMessage } from "ai";
 import { z } from "zod";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
-import { notifyOperatorNewAssessment } from "@/lib/notify.server";
+import { enqueueTransactionalEmail } from "@/lib/email/enqueue.server";
 
 const SYSTEM_PROMPT = `You are AGENT.rcv — a laconic, competent operative for Wallet Recovery Agent, in a green-on-black terminal.
 Voice: terse, technical, lowercase where natural. No exclamation marks. No hype. Prefix system messages with '>' occasionally.
@@ -102,9 +102,35 @@ export const Route = createFileRoute("/api/agent")({
               console.error("[agent.save_assessment] insert failed:", error.message, error.details ?? "");
               return { ok: false, error: error.message };
             }
-            // Fire-and-forget operator notification. No-ops if email not configured.
-            void notifyOperatorNewAssessment(data);
-            return { ok: true, case_ref: String(data.id).slice(0, 8).toUpperCase(), full_id: data.id };
+            const ref = String(data.id).slice(0, 8).toUpperCase();
+            // Fire-and-forget: assessment-received to the guest + operator alert.
+            void Promise.all([
+              enqueueTransactionalEmail({
+                templateName: "assessment-received",
+                recipientEmail: data.guest_email ?? undefined,
+                idempotencyKey: `assessment-received-${data.id}`,
+                templateData: {
+                  case_ref: ref,
+                  wallet_type: data.wallet_type,
+                  loss_reason: data.loss_reason,
+                  is_authenticated: false,
+                },
+              }),
+              enqueueTransactionalEmail({
+                templateName: "operator-new-assessment",
+                idempotencyKey: `operator-new-assessment-${data.id}`,
+                templateData: {
+                  case_ref: ref,
+                  wallet_type: data.wallet_type,
+                  loss_reason: data.loss_reason,
+                  contact_email: data.guest_email,
+                  estimated_value: data.estimated_value,
+                  recovery_probability: data.recovery_probability,
+                  is_authenticated: false,
+                },
+              }),
+            ]).catch((err) => console.error("[agent.save_assessment] email failed:", err));
+            return { ok: true, case_ref: ref, full_id: data.id };
           },
         });
 

@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
+import { sendCaseStatusUpdateEmail } from "@/lib/emails.functions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -57,6 +59,7 @@ function CaseDetail() {
   const [msg, setMsg] = useState("");
   const [isInternal, setIsInternal] = useState(false);
 
+  const sendStatusEmail = useServerFn(sendCaseStatusUpdateEmail);
   const postUpdate = useMutation({
     mutationFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -73,6 +76,16 @@ function CaseDetail() {
           message: updateNote,
         });
         if (e2) throw e2;
+      }
+      // Notify the customer when status changed (only on real status change).
+      if (newStatus && caseRow && newStatus !== caseRow.status) {
+        sendStatusEmail({
+          data: {
+            caseId: id,
+            newStatus,
+            note: updateNote.trim() || null,
+          },
+        }).catch((err) => console.error("[case] status email failed:", err));
       }
     },
     onSuccess: () => {
