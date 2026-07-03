@@ -104,24 +104,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Wallet Recovery Agent — Recover Lost Crypto Wallets" },
-      {
-        name: "description",
-        content:
-          "Private AI assessment, senior human operatives. Recover seed phrases, wallet passwords, hardware wallets & exchange lockouts. No recovery, no fee.",
-      },
       { name: "author", content: "Wallet Recovery Agent" },
       { name: "keywords", content: "wallet recovery, crypto wallet recovery, seed phrase recovery, forgot metamask password, ledger recovery, trezor recovery, lost bitcoin, lost crypto recovery" },
       { property: "og:site_name", content: "Wallet Recovery Agent" },
-      { property: "og:title", content: "Wallet Recovery Agent — Recover Lost Crypto Wallets" },
-      { property: "og:description", content: "Secure Recovery Hub provides Wallet Recovery as a Service (WRaaS) for lost cryptocurrency access." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Wallet Recovery Agent — Recover Lost Crypto Wallets" },
-      { name: "twitter:description", content: "Secure Recovery Hub provides Wallet Recovery as a Service (WRaaS) for lost cryptocurrency access." },
-      { name: "description", content: "Secure Recovery Hub provides Wallet Recovery as a Service (WRaaS) for lost cryptocurrency access." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/Nz94FlzZhAUL7Qyy7N9OzcfiFDW2/social-images/social-1783102975285-og-image.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/Nz94FlzZhAUL7Qyy7N9OzcfiFDW2/social-images/social-1783102975285-og-image.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

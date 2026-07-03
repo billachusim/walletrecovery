@@ -5,6 +5,7 @@ import remarkGfm from "remark-gfm";
 import { Header } from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowRight } from "lucide-react";
+import { RELATED_RECOVER_BY_CATEGORY } from "@/lib/related-content";
 
 type Post = {
   id: string;
@@ -156,6 +157,7 @@ function BlogPost() {
   const { slug } = Route.useParams();
   const { data: post } = useSuspenseQuery(postQuery(slug));
   const readingMinutes = Math.max(1, Math.round(post.content.split(/\s+/).length / 220));
+  const relatedRecover = post.category ? RELATED_RECOVER_BY_CATEGORY[post.category] : undefined;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -186,7 +188,23 @@ function BlogPost() {
           </div>
         </article>
 
-        <div className="mt-12 rounded border border-primary/60 bg-card/60 p-6">
+        {relatedRecover ? (
+          <div className="mt-12 rounded border border-border/60 bg-card/60 p-6">
+            <p className="font-mono text-xs uppercase tracking-wider text-primary/70">// related service</p>
+            <p className="mt-2 font-mono text-primary">&gt; {relatedRecover.label}</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Need this handled, not just explained? Our operatives specialize in exactly this scenario.
+            </p>
+            <a
+              href={`/recover/${relatedRecover.slug}`}
+              className="mt-4 inline-flex items-center gap-2 font-mono text-xs text-primary hover:text-glow"
+            >
+              [ open service page ] <ArrowRight className="h-3 w-3" />
+            </a>
+          </div>
+        ) : null}
+
+        <div className="mt-8 rounded border border-primary/60 bg-card/60 p-6">
           <p className="font-mono text-sm text-primary text-glow">&gt; ready_to_talk.sh</p>
           <p className="mt-2 text-sm text-muted-foreground">
             Free assessment. No plaintext seed required. No recovery, no fee.

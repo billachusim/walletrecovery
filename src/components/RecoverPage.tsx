@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Header } from "@/components/Header";
 import { ArrowRight } from "lucide-react";
+import { RELATED_POSTS_BY_RECOVER } from "@/lib/related-content";
 
 export interface RecoverFaq {
   q: string;
@@ -66,6 +67,26 @@ export function RecoverPage({ kicker, h1, intro, sections, faqs, crumbTitle, slu
             ))}
           </dl>
         </section>
+
+        {RELATED_POSTS_BY_RECOVER[slug]?.length ? (
+          <section className="mt-14">
+            <h2 className="font-mono text-xl text-primary text-glow-soft">&gt; related_intel.md</h2>
+            <ul className="mt-4 grid gap-3 md:grid-cols-2">
+              {RELATED_POSTS_BY_RECOVER[slug].map((p) => (
+                <li key={p.slug}>
+                  <Link
+                    to="/blog/$slug"
+                    params={{ slug: p.slug }}
+                    className="group block rounded border border-border/60 bg-card/60 p-4 transition-colors hover:border-primary/60 hover:bg-card"
+                  >
+                    <span className="font-mono text-xs text-primary/70">// intel</span>
+                    <p className="mt-1 font-mono text-sm text-primary group-hover:text-glow">{p.title}</p>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
 
         <div className="mt-16 rounded border border-primary/60 bg-card/60 p-6">
           <p className="font-mono text-sm text-primary text-glow">&gt; open_case.sh</p>
