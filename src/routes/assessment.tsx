@@ -2,8 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useRef, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { Header } from "@/components/Header";
 import { Terminal, ArrowRight } from "lucide-react";
+import { submitGuestAssessment } from "@/lib/assessments.functions";
 
 export const Route = createFileRoute("/assessment")({
   head: () => ({
@@ -137,8 +139,151 @@ function AssessmentPage() {
             [ create an account to track progress ]
           </Link>
         </p>
+
+        <ManualFallbackForm />
       </main>
     </div>
+  );
+}
+
+function ManualFallbackForm() {
+  const submit = useServerFn(submitGuestAssessment);
+  const [email, setEmail] = useState("");
+  const [walletType, setWalletType] = useState("");
+  const [lossReason, setLossReason] = useState("");
+  const [details, setDetails] = useState("");
+  const [state, setState] = useState<
+    | { kind: "idle" }
+    | { kind: "submitting" }
+    | { kind: "ok"; ref: string }
+    | { kind: "error"; message: string }
+  >({ kind: "idle" });
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (state.kind === "submitting") return;
+    setState({ kind: "submitting" });
+    try {
+      const res = await submit({
+        data: {
+          guest_email: email.trim(),
+          wallet_type: walletType.trim(),
+          loss_reason: lossReason.trim(),
+          details: details.trim() || null,
+        },
+      });
+      if (res.ok) {
+        setState({ kind: "ok", ref: res.case_ref });
+        setEmail("");
+        setWalletType("");
+        setLossReason("");
+        setDetails("");
+      } else {
+        setState({ kind: "error", message: res.error });
+      }
+    } catch (err) {
+      setState({
+        kind: "error",
+        message: err instanceof Error ? err.message : "Unknown error",
+      });
+    }
+  };
+
+  const fieldCls =
+    "w-full rounded border border-border/70 bg-background/60 px-3 py-2 font-mono text-sm text-foreground outline-none placeholder:text-muted-foreground/50 focus:border-primary/70";
+
+  return (
+    <section className="mt-10 rounded border border-primary/30 bg-card/50 p-5">
+      <details>
+        <summary className="cursor-pointer font-mono text-sm text-primary text-glow-soft">
+          &gt; prefer a form? [ save case manually ]
+        </summary>
+        <p className="mt-2 font-mono text-xs text-muted-foreground">
+          skip the chat. we&apos;ll route this straight to an operator.
+        </p>
+
+        {state.kind === "ok" ? (
+          <div className="mt-4 rounded border border-primary/60 bg-primary/10 p-4 font-mono text-sm text-primary">
+            &gt; case saved. ref:{" "}
+            <span className="text-glow">{state.ref}</span>
+            <br />
+            an operator will reach out within 24–48h.
+          </div>
+        ) : (
+          <form onSubmit={onSubmit} className="mt-4 grid gap-3">
+            <div>
+              <label className="mb-1 block font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+                email
+              </label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className={fieldCls}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+                wallet type
+              </label>
+              <input
+                type="text"
+                required
+                maxLength={80}
+                value={walletType}
+                onChange={(e) => setWalletType(e.target.value)}
+                placeholder="ledger, trezor, metamask, coinbase, other..."
+                className={fieldCls}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+                loss reason
+              </label>
+              <input
+                type="text"
+                required
+                maxLength={200}
+                value={lossReason}
+                onChange={(e) => setLossReason(e.target.value)}
+                placeholder="forgot password, partial seed, damaged device..."
+                className={fieldCls}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+                details (optional)
+              </label>
+              <textarea
+                rows={3}
+                maxLength={4000}
+                value={details}
+                onChange={(e) => setDetails(e.target.value)}
+                placeholder="anything relevant — do NOT include full seed phrases or private keys."
+                className={fieldCls}
+              />
+            </div>
+
+            {state.kind === "error" && (
+              <p className="rounded border border-destructive/60 bg-destructive/10 p-2 font-mono text-xs text-destructive-foreground">
+                &gt; save failed: {state.message}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={state.kind === "submitting"}
+              className="mt-1 inline-flex h-10 items-center justify-center gap-1 rounded border border-primary/70 bg-primary/10 px-4 font-mono text-xs uppercase tracking-wider text-primary hover:bg-primary hover:text-primary-foreground disabled:opacity-40"
+            >
+              {state.kind === "submitting" ? "[ saving... ]" : "[ save case ]"}
+              <ArrowRight className="h-3 w-3" />
+            </button>
+          </form>
+        )}
+      </details>
+    </section>
   );
 }
 

@@ -1,41 +1,49 @@
-## Where we are — round check
+## What I found
 
-**Shipped and working**
+- **Dashboard has no header at all** — that's why there's no way home from `/dashboard`. The "Wallet Recovery" text you're seeing is the browser tab title getting truncated. The `/console` page does have a header (with `wallet_recovery_agent` as a home link), but on narrow widths the wordmark can clip.
+- **Your assessment isn't in the database.** `SELECT * FROM assessments` returns 0 rows — the AI agent chat ended without calling the `save_assessment` tool, so nothing was written and no operator email fired. Staff RLS is fine (it would show guest rows if they existed); the problem is the save never happened.
 
-- Public site (all with per-route SEO metadata + JSON-LD):
-  - Home, `/services`, `/pricing`, `/faq`, `/about`, `/contact`, `/assessment`
-  - Intel: `/blog` index + 7 published articles including the new `coinbase-recovery-guide` (with FAQPage schema)
-  - Landing pages: `/recover/exchange-lockout`, `/forgotten-password`, `/hardware-wallet`, `/metamask`, `/seed-phrase`, `/trust-wallet`
-- Auth: `/auth`, `/forgot-password`, `/reset-password`, protected `_authenticated/dashboard`
-- Backend: Lovable Cloud with `articles`, `assessments`, `cases`, `case_messages`, `case_updates`, `documents`, `profiles`, `user_roles`
-- Security: previous scan findings fixed (sender_id / uploaded_by enforcement, ownership-transfer triggers, has_role EXECUTE scope)
-- Brand: `>_` logo mark, favicon set, apple-touch-icon, og-image, unified header nav (`/services`, `/pricing`, `/intel`, `/faq`, `/about`, `/login`)
-- Discovery: dynamic `/sitemap.xml`, `robots.txt`, `llms.txt`, agent chat endpoint at `/api/agent`
+## Plan
 
-**Open items**
+### 1. Nav on every screen, brand always goes home
 
-- SEO scan still lists 1 failing finding: "Add a Coinbase recovery guide" — this is **stale**. The article is published at `/blog/coinbase-recovery-guide`. Just needs to be marked fixed (rescan will confirm).
-- 0 real users, 0 assessments, 0 cases — no data flowing yet. The funnel is live but untested end-to-end by a real submission.
-- No traffic yet — the site hasn't been submitted to Google Search Console / Bing Webmaster Tools.
-- `dashboard.tsx` is the only authenticated surface; staff (admin/staff role) has no console to triage assessments or manage cases.
-- No email/notifications on assessment submission (operator won't know when a lead lands).
-- Payments not wired (Stripe/Paddle) — pricing page describes tiers but there's no checkout / retainer flow.
+- Add the shared `<Header />` to `/dashboard` (currently missing).
+- In `Header.tsx`: keep the `<Link to="/">` wrapping the logo + wordmark, but make it survive narrow widths — `min-w-0` on the link, `truncate` on the wordmark, `shrink-0` on the logo icon. Full `wallet_recovery_agent` shows on desktop; on very narrow phones it truncates gracefully instead of clipping the layout.
+- Console header already exists; the same brand-link fix flows through since both use the shared `<Header />`.
 
-## Suggested next moves (pick any — this plan just decides direction, no code yet)
+### 2. Mobile menu styled as the brand mark
 
-Ranked by leverage:
+Replace the lucide `Menu` / `X` hamburger icons with a small terminal-style toggle button that matches the `>_` motif:
 
-1. **Close the SEO loop** *(1 min)* — mark the stale Coinbase finding fixed and trigger a rescan.
-2. **Staff console** *(medium)* — `_authenticated/console` for `staff|admin` roles: list assessments, convert to case, message thread, case-updates timeline. Currently there's no way to actually work a lead that comes in.
-3. **Assessment → notification** *(small)* — send an email (Lovable Email) to a configured operator address when a new assessment lands. Optional Slack webhook via connector.
-4. **End-to-end smoke test** *(small)* — submit a fake assessment, log in, verify it appears, confirm RLS still lets the owner read it after the ownership-transfer trigger.
-5. **Search Console + Bing submission** *(user-side, we prep)* — add verification meta tag support, confirm sitemap URL, and hand over the checklist.
-6. **Payments** *(large)* — enable Stripe/Paddle for the retainer + success-fee flow described on `/pricing`. Only worth doing after 2–3 real cases validate the pricing model.
-7. **More intel posts** *(ongoing)* — cover the remaining high-intent keywords (Ledger recovery, Trezor recovery, Trust Wallet import failure, Binance withdrawal locked). Sitemap already picks them up automatically.
-8. **Analytics** *(small)* — Plausible or PostHog on the public routes so we can see which recovery landing pages convert to `/assessment` starts.
+- **Closed** (menu hidden): renders `_` — just the underscore glyph in primary green, blinking caret feel.
+- **Open** (menu shown): renders `>` — the chevron in primary green.
+- Fixed-width mono font, same 8×8 target as before, `aria-label` still "Toggle menu", `aria-expanded` still bound.
+- Bonus: the mobile dropdown menu already collapses when you tap a link (`onClick={() => setMobileOpen(false)}`), and a click on the toggle re-collapses it — no change needed there.
 
-## What I'd do first if it were up to me
+### 3. Fix the "assessment vanished" problem
 
-Do 1 + 2 + 3 in one pass: mark the SEO finding fixed, build the staff console, wire operator email on new assessment. That turns the site from "brochure with a form" into an actual working operations surface — which is the smallest change that makes the next real case handleable.
+Two-layer fix so we never lose a lead again:
 
-Reply with a number (or a combo) and I'll write the implementation plan for it.
+**a) Make the AI reliably persist.** Tighten `SYSTEM_PROMPT` in `src/routes/api/agent.ts` to mandate calling `save_assessment` as soon as it has `wallet_type + loss_reason + email` (even if other fields are still null), then continue the conversation. Add server-side logging in the `save_assessment` handler when the insert errors so we can see failures in gateway logs.
+
+**b) Add a visible fallback form on `/assessment`.** A small `[ save case manually ]` section below the terminal chat with four fields (email, wallet type, loss reason, notes). Direct anon insert into `assessments` (the existing "Anyone can submit guest assessments" policy already allows this). Also fires the operator notification via the same `notifyOperatorNewAssessment` server function (moved to a tiny `createServerFn` so the form can trigger it).
+
+Anyone who talks to the agent OR just fills the fallback form ends up in the DB → visible in `/console` under `/assessments` with a "guest" pill.
+
+### 4. Console guest-row polish
+
+- On the `/console` queue, show a small "guest" chip when `user_id IS NULL` and show the `guest_email` as the primary contact line so operators can reach out.
+
+### Out of scope
+
+- Verifying the operator email actually delivered (requires `RESEND_API_KEY` + `OPERATOR_EMAIL` secrets, or Lovable Email domain setup — separate turn if you want it).
+- Reworking the assessment agent's conversation logic beyond the prompt tightening above.
+
+### Technical notes
+
+- Header remains one component; both `/dashboard` and `/console` share it.
+- Mobile toggle uses two `<span>`s (chevron / underscore) rendered conditionally — no image asset needed.
+- Fallback form → `createServerFn({ method: "POST" })` in `src/lib/assessments.functions.ts` that uses the server publishable client (RLS-enforced) to insert, then fires `notifyOperatorNewAssessment`. No admin key needed.
+- Once implemented, guest-submitted rows show in `/console` automatically thanks to the existing `Staff can read all assessments` RLS policy.
+
+Reply "go" to build it.

@@ -2,7 +2,7 @@ import { Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, Menu, X } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { LogoMark } from "@/components/LogoMark";
 
 export function Header() {
@@ -49,11 +49,14 @@ export function Header() {
 
   return (
     <header className="border-b border-border/60 bg-background/70 backdrop-blur relative z-20">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-        <Link to="/" className="flex items-center gap-2 font-mono text-lg font-bold tracking-tight text-primary text-glow">
-          <LogoMark className="h-6 w-6 text-primary" />
-          <span>wallet_recovery_agent</span>
-          <span className="terminal-caret" aria-hidden="true" />
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3">
+        <Link
+          to="/"
+          className="flex min-w-0 items-center gap-2 font-mono text-base font-bold tracking-tight text-primary text-glow sm:text-lg"
+        >
+          <LogoMark className="h-6 w-6 shrink-0 text-primary" />
+          <span className="truncate">wallet_recovery_agent</span>
+          <span className="terminal-caret shrink-0" aria-hidden="true" />
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">
@@ -78,14 +81,14 @@ export function Header() {
           )}
         </nav>
 
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex shrink-0 items-center gap-2 md:hidden">
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="p-2 text-primary"
-            aria-label="Toggle menu"
+            className="flex h-9 w-10 items-center justify-center rounded border border-primary/50 bg-primary/5 font-mono text-lg font-bold leading-none text-primary text-glow hover:bg-primary/15"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
           >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            <span aria-hidden="true">{mobileOpen ? ">" : "_"}</span>
           </button>
         </div>
       </div>

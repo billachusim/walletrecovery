@@ -64,9 +64,14 @@ function AssessmentQueue() {
                 <span className="text-sm font-medium text-card-foreground">
                   {a.wallet_type}
                 </span>
+                {a.guest_email && (
+                  <span className="rounded border border-accent/40 bg-accent/10 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-accent">
+                    guest
+                  </span>
+                )}
               </div>
               <p className="text-xs text-muted-foreground">
-                {a.loss_reason} · {a.guest_email ?? "no contact"}
+                {a.loss_reason} · {a.guest_email ?? "signed-in user"}
               </p>
               <p className="mt-1 font-mono text-[10px] text-muted-foreground">
                 {new Date(a.created_at).toLocaleString()}

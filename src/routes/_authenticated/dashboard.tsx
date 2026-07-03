@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Briefcase, FileText, MessageSquare, Clock } from "lucide-react";
+import { Header } from "@/components/Header";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: DashboardPage,
@@ -56,6 +57,7 @@ function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Header />
       <main className="mx-auto max-w-7xl px-4 py-10">
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
