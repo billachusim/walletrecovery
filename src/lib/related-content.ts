@@ -30,6 +30,11 @@ export const RELATED_POSTS_BY_RECOVER: Record<string, RelatedPost[]> = {
     { slug: "coinbase-recovery-guide", title: "Coinbase Recovery Guide: Locked Accounts, Missing Funds, Wrong-Chain Deposits" },
     { slug: "how-wallet-recovery-really-works", title: "How Wallet Recovery Really Works (and How to Spot the Scams)" },
   ],
+  coinbase: [
+    { slug: "coinbase-recovery-guide", title: "Coinbase Recovery Guide: Locked Accounts, Missing Funds, Wrong-Chain Deposits" },
+    { slug: "long-tail-recovery-trezor-bip39-lost-bitcoin", title: "Trezor, BIP39, and Lost Bitcoin: A Long-Tail Recovery Reference" },
+    { slug: "how-wallet-recovery-really-works", title: "How Wallet Recovery Really Works (and How to Spot the Scams)" },
+  ],
 };
 
 // Blog post category → matching /recover/* service.

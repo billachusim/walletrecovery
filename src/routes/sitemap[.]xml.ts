@@ -30,6 +30,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/recover/metamask", changefreq: "monthly", priority: "0.9" },
           { path: "/recover/trust-wallet", changefreq: "monthly", priority: "0.9" },
           { path: "/recover/exchange-lockout", changefreq: "monthly", priority: "0.9" },
+          { path: "/recover/coinbase", changefreq: "monthly", priority: "0.9" },
         ];
 
         let postEntries: SitemapEntry[] = [];
