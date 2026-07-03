@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, tool, stepCountIs, type UIMessage } from "ai";
 import { z } from "zod";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
-import { notifyOperatorNewAssessment } from "@/lib/notify.server";
+import { enqueueTransactionalEmail } from "@/lib/email/enqueue.server";
 
 const SYSTEM_PROMPT = `You are AGENT.rcv — a laconic, competent operative for Wallet Recovery Agent, in a green-on-black terminal.
 Voice: terse, technical, lowercase where natural. No exclamation marks. No hype. Prefix system messages with '>' occasionally.
