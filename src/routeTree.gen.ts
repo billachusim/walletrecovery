@@ -32,6 +32,11 @@ import { Route as RecoverExchangeLockoutRouteImport } from './routes/recover.exc
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ApiAgentRouteImport } from './routes/api/agent'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedConsoleRouteImport } from './routes/_authenticated/console'
+import { Route as AuthenticatedConsoleIndexRouteImport } from './routes/_authenticated/console.index'
+import { Route as AuthenticatedConsoleCasesRouteImport } from './routes/_authenticated/console.cases'
+import { Route as AuthenticatedConsoleCaseIdRouteImport } from './routes/_authenticated/console.case.$id'
+import { Route as AuthenticatedConsoleAssessmentIdRouteImport } from './routes/_authenticated/console.assessment.$id'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -148,6 +153,35 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedConsoleRoute = AuthenticatedConsoleRouteImport.update({
+  id: '/console',
+  path: '/console',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedConsoleIndexRoute =
+  AuthenticatedConsoleIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedConsoleRoute,
+  } as any)
+const AuthenticatedConsoleCasesRoute =
+  AuthenticatedConsoleCasesRouteImport.update({
+    id: '/cases',
+    path: '/cases',
+    getParentRoute: () => AuthenticatedConsoleRoute,
+  } as any)
+const AuthenticatedConsoleCaseIdRoute =
+  AuthenticatedConsoleCaseIdRouteImport.update({
+    id: '/case/$id',
+    path: '/case/$id',
+    getParentRoute: () => AuthenticatedConsoleRoute,
+  } as any)
+const AuthenticatedConsoleAssessmentIdRoute =
+  AuthenticatedConsoleAssessmentIdRouteImport.update({
+    id: '/assessment/$id',
+    path: '/assessment/$id',
+    getParentRoute: () => AuthenticatedConsoleRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -162,6 +196,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/console': typeof AuthenticatedConsoleRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/api/agent': typeof ApiAgentRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -172,6 +207,10 @@ export interface FileRoutesByFullPath {
   '/recover/seed-phrase': typeof RecoverSeedPhraseRoute
   '/recover/trust-wallet': typeof RecoverTrustWalletRoute
   '/blog/': typeof BlogIndexRoute
+  '/console/cases': typeof AuthenticatedConsoleCasesRoute
+  '/console/': typeof AuthenticatedConsoleIndexRoute
+  '/console/assessment/$id': typeof AuthenticatedConsoleAssessmentIdRoute
+  '/console/case/$id': typeof AuthenticatedConsoleCaseIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -195,6 +234,10 @@ export interface FileRoutesByTo {
   '/recover/seed-phrase': typeof RecoverSeedPhraseRoute
   '/recover/trust-wallet': typeof RecoverTrustWalletRoute
   '/blog': typeof BlogIndexRoute
+  '/console/cases': typeof AuthenticatedConsoleCasesRoute
+  '/console': typeof AuthenticatedConsoleIndexRoute
+  '/console/assessment/$id': typeof AuthenticatedConsoleAssessmentIdRoute
+  '/console/case/$id': typeof AuthenticatedConsoleCaseIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -211,6 +254,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/_authenticated/console': typeof AuthenticatedConsoleRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/api/agent': typeof ApiAgentRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -221,6 +265,10 @@ export interface FileRoutesById {
   '/recover/seed-phrase': typeof RecoverSeedPhraseRoute
   '/recover/trust-wallet': typeof RecoverTrustWalletRoute
   '/blog/': typeof BlogIndexRoute
+  '/_authenticated/console/cases': typeof AuthenticatedConsoleCasesRoute
+  '/_authenticated/console/': typeof AuthenticatedConsoleIndexRoute
+  '/_authenticated/console/assessment/$id': typeof AuthenticatedConsoleAssessmentIdRoute
+  '/_authenticated/console/case/$id': typeof AuthenticatedConsoleCaseIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -237,6 +285,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/services'
     | '/sitemap.xml'
+    | '/console'
     | '/dashboard'
     | '/api/agent'
     | '/blog/$slug'
@@ -247,6 +296,10 @@ export interface FileRouteTypes {
     | '/recover/seed-phrase'
     | '/recover/trust-wallet'
     | '/blog/'
+    | '/console/cases'
+    | '/console/'
+    | '/console/assessment/$id'
+    | '/console/case/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -270,6 +323,10 @@ export interface FileRouteTypes {
     | '/recover/seed-phrase'
     | '/recover/trust-wallet'
     | '/blog'
+    | '/console/cases'
+    | '/console'
+    | '/console/assessment/$id'
+    | '/console/case/$id'
   id:
     | '__root__'
     | '/'
@@ -285,6 +342,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/services'
     | '/sitemap.xml'
+    | '/_authenticated/console'
     | '/_authenticated/dashboard'
     | '/api/agent'
     | '/blog/$slug'
@@ -295,6 +353,10 @@ export interface FileRouteTypes {
     | '/recover/seed-phrase'
     | '/recover/trust-wallet'
     | '/blog/'
+    | '/_authenticated/console/cases'
+    | '/_authenticated/console/'
+    | '/_authenticated/console/assessment/$id'
+    | '/_authenticated/console/case/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -483,14 +545,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/console': {
+      id: '/_authenticated/console'
+      path: '/console'
+      fullPath: '/console'
+      preLoaderRoute: typeof AuthenticatedConsoleRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/console/': {
+      id: '/_authenticated/console/'
+      path: '/'
+      fullPath: '/console/'
+      preLoaderRoute: typeof AuthenticatedConsoleIndexRouteImport
+      parentRoute: typeof AuthenticatedConsoleRoute
+    }
+    '/_authenticated/console/cases': {
+      id: '/_authenticated/console/cases'
+      path: '/cases'
+      fullPath: '/console/cases'
+      preLoaderRoute: typeof AuthenticatedConsoleCasesRouteImport
+      parentRoute: typeof AuthenticatedConsoleRoute
+    }
+    '/_authenticated/console/case/$id': {
+      id: '/_authenticated/console/case/$id'
+      path: '/case/$id'
+      fullPath: '/console/case/$id'
+      preLoaderRoute: typeof AuthenticatedConsoleCaseIdRouteImport
+      parentRoute: typeof AuthenticatedConsoleRoute
+    }
+    '/_authenticated/console/assessment/$id': {
+      id: '/_authenticated/console/assessment/$id'
+      path: '/assessment/$id'
+      fullPath: '/console/assessment/$id'
+      preLoaderRoute: typeof AuthenticatedConsoleAssessmentIdRouteImport
+      parentRoute: typeof AuthenticatedConsoleRoute
+    }
   }
 }
 
+interface AuthenticatedConsoleRouteChildren {
+  AuthenticatedConsoleCasesRoute: typeof AuthenticatedConsoleCasesRoute
+  AuthenticatedConsoleIndexRoute: typeof AuthenticatedConsoleIndexRoute
+  AuthenticatedConsoleAssessmentIdRoute: typeof AuthenticatedConsoleAssessmentIdRoute
+  AuthenticatedConsoleCaseIdRoute: typeof AuthenticatedConsoleCaseIdRoute
+}
+
+const AuthenticatedConsoleRouteChildren: AuthenticatedConsoleRouteChildren = {
+  AuthenticatedConsoleCasesRoute: AuthenticatedConsoleCasesRoute,
+  AuthenticatedConsoleIndexRoute: AuthenticatedConsoleIndexRoute,
+  AuthenticatedConsoleAssessmentIdRoute: AuthenticatedConsoleAssessmentIdRoute,
+  AuthenticatedConsoleCaseIdRoute: AuthenticatedConsoleCaseIdRoute,
+}
+
+const AuthenticatedConsoleRouteWithChildren =
+  AuthenticatedConsoleRoute._addFileChildren(AuthenticatedConsoleRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedConsoleRoute: typeof AuthenticatedConsoleRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedConsoleRoute: AuthenticatedConsoleRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
 }
 

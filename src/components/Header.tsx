@@ -7,15 +7,33 @@ import { LogoMark } from "@/components/LogoMark";
 
 export function Header() {
   const router = useRouter();
-  const [user, setUser] = useState<{ email?: string } | null>(null);
+  const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
+  const [isStaff, setIsStaff] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
+    const loadRole = async (uid: string) => {
+      const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid);
+      const roles = (data ?? []).map((r) => r.role as string);
+      setIsStaff(roles.includes("staff") || roles.includes("admin"));
+    };
     supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user ? { email: data.user.email } : null);
+      if (data.user) {
+        setUser({ id: data.user.id, email: data.user.email });
+        loadRole(data.user.id);
+      } else {
+        setUser(null);
+        setIsStaff(false);
+      }
     });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
-      setUser(session?.user ? { email: session.user.email } : null);
+      if (session?.user) {
+        setUser({ id: session.user.id, email: session.user.email });
+        loadRole(session.user.id);
+      } else {
+        setUser(null);
+        setIsStaff(false);
+      }
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -24,6 +42,7 @@ export function Header() {
     await supabase.auth.signOut();
     router.invalidate();
     setUser(null);
+    setIsStaff(false);
   };
 
   const linkCls = "text-sm font-mono text-muted-foreground hover:text-primary transition-colors";
@@ -48,7 +67,8 @@ export function Header() {
           </Link>
           {user ? (
             <>
-              <Link to="/dashboard" className={linkCls}>/console</Link>
+              <Link to="/dashboard" className={linkCls}>/dashboard</Link>
+              {isStaff && <Link to="/console" className={linkCls}>/console</Link>}
               <Button variant="ghost" size="sm" onClick={handleSignOut} className="font-mono">
                 <LogOut className="mr-1 h-3.5 w-3.5" /> exit
               </Button>
@@ -81,7 +101,10 @@ export function Header() {
             <Link to="/assessment" className={linkCls} onClick={() => setMobileOpen(false)}>[ talk to agent ]</Link>
             {user ? (
               <>
-                <Link to="/dashboard" className={linkCls} onClick={() => setMobileOpen(false)}>/console</Link>
+                <Link to="/dashboard" className={linkCls} onClick={() => setMobileOpen(false)}>/dashboard</Link>
+                {isStaff && (
+                  <Link to="/console" className={linkCls} onClick={() => setMobileOpen(false)}>/console</Link>
+                )}
                 <button onClick={handleSignOut} className={`${linkCls} text-left`}>exit</button>
               </>
             ) : (
