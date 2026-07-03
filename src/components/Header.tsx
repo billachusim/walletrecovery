@@ -2,7 +2,8 @@ import { Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, Menu, Terminal, X } from "lucide-react";
+import { LogOut, Menu, X } from "lucide-react";
+import { LogoMark } from "@/components/LogoMark";
 
 export function Header() {
   const router = useRouter();
