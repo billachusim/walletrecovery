@@ -12,10 +12,90 @@
   "mcp": {
     "server": {
       "name": "wallet-recovery-mcp",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "title": "Wallet Recovery Agent"
     },
     "tools": [
+      {
+        "name": "get_service_overview",
+        "title": "Get service overview",
+        "description": "Public overview of Wallet Recovery Agent — what we do, the no-recovery-no-fee model, timeline, and safety rules. No sign-in required. Use this to explain the service to a user asking about wallet recovery.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_supported_wallets",
+        "title": "List supported wallets",
+        "description": "Public list of wallet types, chains, and exchanges Wallet Recovery Agent supports. No sign-in required.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_recovery_scenarios",
+        "title": "List recovery scenarios",
+        "description": "Public list of loss scenarios Wallet Recovery Agent handles, with one-line descriptions. Use to match a user's situation to a scenario. No sign-in required.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_pricing_model",
+        "title": "Get pricing model",
+        "description": "Public summary of Wallet Recovery Agent's pricing: contingency-based, no recovery no fee. Use when a user asks how much recovery costs. No sign-in required.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_started_url",
+        "title": "Get started URLs",
+        "description": "Canonical URLs for starting a wallet recovery: assessment form, sign-in, case dashboard, pricing, FAQ. Use when directing a user to take action on walletrecovery.dev. No sign-in required.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
       {
         "name": "list_my_assessments",
         "title": "List my assessments",
