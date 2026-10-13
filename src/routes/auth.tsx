@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (s: Record<string, unknown>) => ({
-    next: typeof s.next === "string" ? s.next : "",
+  validateSearch: (s: Record<string, unknown>): { next?: string } => ({
+    next: typeof s.next === "string" ? s.next : undefined,
   }),
   component: AuthPage,
 });
@@ -21,7 +21,7 @@ function isSameOriginPath(p: string): boolean {
 function AuthPage() {
   const navigate = useNavigate();
   const { next } = Route.useSearch();
-  const safeNext = isSameOriginPath(next) ? next : "";
+  const safeNext = next && isSameOriginPath(next) ? next : "";
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
