@@ -21,7 +21,7 @@ function isSameOriginPath(p: string): boolean {
 function AuthPage() {
   const navigate = useNavigate();
   const { next } = Route.useSearch();
-  const safeNext = isSameOriginPath(next) ? next : "";
+  const safeNext = next && isSameOriginPath(next) ? next : "";
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
