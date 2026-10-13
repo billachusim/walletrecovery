@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (s: Record<string, unknown>) => ({
-    next: typeof s.next === "string" ? s.next : "",
+  validateSearch: (s: Record<string, unknown>): { next?: string } => ({
+    next: typeof s.next === "string" ? s.next : undefined,
   }),
   component: AuthPage,
 });
